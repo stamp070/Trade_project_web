@@ -26,13 +26,11 @@ export default function Sidebar() {
 
     return (
         <div className='flex flex-col gap-6 p-4 '>
-            <Button variant="outline" className="w-full justify-between h-12 rounded-full border-gray-200 hover:bg-gray-50 hover:text-gray-900">
+            <Button variant="outline" className="w-full justify-between h-12 rounded-full border-gray-200 hover:bg-gray-50 hover:text-gray-900" onClick={() => setMt5modal(true)}>
                 <span className="text-base font-normal">MT 5 Account</span>
                 <Plus className="h-5 w-5 text-gray-500" />
             </Button>
-            {mt5modal &&
-                <Mt5Modal open={mt5modal} onOpenChange={setMt5modal} />
-            }
+            <Mt5Modal isOpen={mt5modal} onOpenChange={setMt5modal} />
 
             <Card className="bg-blue-50/50 border-none shadow-none">
                 <CardHeader className="pb-2">
