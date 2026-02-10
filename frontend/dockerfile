@@ -1,0 +1,20 @@
+# ใช้ Node Image
+FROM node:18-alpine
+
+# ตั้ง Folder ทำงาน
+WORKDIR /app
+
+# Copy package.json เข้าไปก่อน
+COPY package.json package-lock.json* ./
+
+# Install dependencies
+RUN npm install
+
+# Copy โค้ดทั้งหมด
+COPY . .
+
+# เปิด Port 3000
+EXPOSE 3000
+
+# รัน Dev mode
+CMD ["npm", "run", "dev"]

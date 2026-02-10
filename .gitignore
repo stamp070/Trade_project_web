@@ -1,0 +1,5 @@
+.env
+venv
+requirements.txt
+node_modules
+docker-compose.yaml

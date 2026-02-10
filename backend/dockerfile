@@ -1,0 +1,23 @@
+# ใช้ Python Image ตัวเล็ก
+FROM python:3.11-slim
+
+# ตั้ง Folder ทำงาน
+WORKDIR /app
+
+# ลง Library ที่จำเป็นสำหรับ compile (บางที install pandas/numpy ต้องใช้)
+RUN apt-get update && apt-get install -y gcc libpq-dev
+
+# Copy ไฟล์ requirements.txt เข้าไปก่อน (เพื่อ Cache Layer)
+COPY requirements.txt .
+
+# Install dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy โค้ดทั้งหมดเข้าไป
+COPY . .
+
+# (Optional) เปิด Port 8000 ไว้โชว์
+EXPOSE 8000
+
+# Command Default (จะถูก docker-compose ทับ แต่ใส่ไว้กันเหนียว)
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
