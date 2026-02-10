@@ -46,13 +46,6 @@ export default async function Navbar() {
                             Bills
                         </Button>
                     </Link>
-                    {!user && (
-                        <Link href="/login">
-                            <Button variant="ghost" className="text-slate-600 hover:bg-transparent hover:text-blue-600 no-underline hover:underline underline-offset-4">
-                                Log In
-                            </Button>
-                        </Link>
-                    )}
                     {userRole === 'admin' && (
                         <Link href="/admin">
                             <Button variant="ghost" className="text-slate-600 hover:bg-transparent hover:text-blue-600 no-underline hover:underline underline-offset-4">

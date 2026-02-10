@@ -1,3 +1,4 @@
+// frontend/utils/supabase/middleware.ts
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
@@ -15,9 +16,7 @@ export async function updateSession(request: NextRequest) {
                     return request.cookies.getAll()
                 },
                 setAll(cookiesToSet) {
-                    cookiesToSet.forEach(({ name, value, options }) =>
-                        request.cookies.set(name, value)
-                    )
+                    cookiesToSet.forEach(({ name, value, options }) => request.cookies.set(name, value))
                     supabaseResponse = NextResponse.next({
                         request,
                     })
@@ -29,35 +28,45 @@ export async function updateSession(request: NextRequest) {
         }
     )
 
-    // IMPORTANT: Avoid writing any logic between createServerClient and
-    // supabase.auth.getUser(). A simple mistake could make it very hard to debug
-    // issues with users being randomly logged out.
-
+    // 1. ดึง User
     const {
         data: { user },
     } = await supabase.auth.getUser()
 
+    const path = request.nextUrl.pathname
 
+    // 2. กฎสำหรับคน "ยังไม่ Login" (!user)
     if (
         !user &&
-        !request.nextUrl.pathname.startsWith('/login') &&
-        !request.nextUrl.pathname.startsWith('/auth') &&
-        !request.nextUrl.pathname.startsWith('/register') && // Allow register
-        request.nextUrl.pathname !== '/' // Allow home page? Assuming yes based on user code
+        !path.startsWith('/login') &&
+        !path.startsWith('/auth') &&
+        !path.startsWith('/register') &&
+        path !== '/'
     ) {
-        // no user, potentially respond by redirecting the user to the login page
         const url = request.nextUrl.clone()
         url.pathname = '/login'
         return NextResponse.redirect(url)
     }
 
-    // IMPORTANT: You *must* return the supabaseResponse object as it is. If you're
-    // creating a new response object with NextResponse.next() make sure to:
-    // 1. Pass the request in it, like so:
-    //    const myNewResponse = NextResponse.next({ request })
-    // 2. Copy over the cookies, like so:
-    //    myNewResponse.cookies.setAll(supabaseResponse.cookies.getAll())
-    // 3. Change the myNewResponse object to fit your needs, but avoid changing
-    //    the cookies!
+    // 3. (เพิ่ม) กฎสำหรับคน "Login แล้ว" (user)
+    if (user) {
+        // ห้ามกลับไปหน้า Login/Register อีก
+        if (path.startsWith('/login') || path.startsWith('/register')) {
+            const url = request.nextUrl.clone()
+            url.pathname = '/dashboard'
+            return NextResponse.redirect(url)
+        }
+
+        // (เพิ่ม) เช็ค Admin Zone
+        if (path.startsWith('/admin')) {
+            const role = user.user_metadata?.role
+            if (role !== 'admin') {
+                const url = request.nextUrl.clone()
+                url.pathname = '/dashboard' // ดีดกลับ Dashboard ถ้าไม่ใช่ Admin
+                return NextResponse.redirect(url)
+            }
+        }
+    }
+
     return supabaseResponse
 }
