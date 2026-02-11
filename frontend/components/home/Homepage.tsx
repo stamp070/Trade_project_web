@@ -15,24 +15,20 @@ export default function Home() {
 
                     {/* Left Content */}
                     <div className="space-y-8 z-10">
-                        {/* Tagline */}
                         <div className="inline-block px-4 py-1.5 bg-blue-500/20 rounded-full text-blue-200 text-sm font-medium border border-blue-500/30">
                             Automated Trading Made Simple
                         </div>
 
-                        {/* Headline */}
                         <h1 className="text-5xl md:text-7xl font-bold leading-tight">
                             Automated Trading <br />
                             <span className="text-blue-400">Made Simple</span>
                         </h1>
 
-                        {/* Subheadline */}
                         <p className="text-lg text-blue-100 max-w-xl leading-relaxed">
                             Harness the power of AI-driven trading bots to maximize your investment returns.
                             Start your automated trading journey today.
                         </p>
 
-                        {/* CTA Button */}
                         <div className="flex flex-col sm:flex-row gap-4">
                             <Link href="/register">
                                 <Button size="lg" className="bg-white text-blue-900 hover:bg-blue-50 h-14 px-8 text-lg font-bold shadow-lg shadow-blue-900/20">
@@ -42,7 +38,6 @@ export default function Home() {
 
                         </div>
 
-                        {/* Hero Stats [cite: 141-143] */}
                         <div className="grid grid-cols-3 gap-8 pt-8 border-t border-blue-700/50 mt-8">
                             <div>
                                 <p className="text-3xl md:text-4xl font-bold text-blue-400">10%</p>
@@ -59,7 +54,7 @@ export default function Home() {
                         </div>
                     </div>
 
-                    {/* Right Content: Abstract Chart Graphic (จำลองภาพ Chart ใน PDF [cite: 144]) */}
+                    {/* Right Content: Abstract Chart Graphic  */}
                     <div className="relative z-10 hidden md:block pl-10">
                         <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-8 shadow-2xl transform hover:scale-[1.02] transition-transform duration-500">
                             <div className="flex items-center justify-between mb-6">
@@ -72,7 +67,6 @@ export default function Home() {
                                     <TrendingUp className="w-3 h-3" /> LIVE
                                 </div>
                             </div>
-                            {/* Mockup Graph Bars */}
                             <div className="h-80 bg-gradient-to-t from-blue-500/10 to-transparent rounded-lg flex items-end justify-between px-4 pb-0 gap-3 border-b border-white/10">
                                 {[35, 55, 40, 65, 50, 80, 75, 95, 60, 85, 100].map((h, i) => (
                                     <div key={i} style={{ height: `${h}%` }} className="w-full bg-blue-400 rounded-t-sm opacity-80 hover:opacity-100 transition-opacity"></div>
@@ -83,7 +77,7 @@ export default function Home() {
                 </div>
             </section>
 
-            {/* ================= Bot Selection Section [cite: 145-161] ================= */}
+            {/* ================= Bot Section  ================= */}
             <section className="py-24 px-6 bg-slate-50">
                 <div className="max-w-7xl mx-auto">
                     <div className="text-center mb-16 space-y-4">
@@ -94,7 +88,7 @@ export default function Home() {
                     </div>
 
                     <div className="grid md:grid-cols-3 gap-8">
-                        {/* Bot 1: EUR/USD [cite: 147-152] */}
+                        {/* Bot 1: EUR/USD  */}
                         <BotCard
                             icon={<Euro className="w-6 h-6 text-blue-600" />}
                             title="EUR / USD Bot"
@@ -105,7 +99,7 @@ export default function Home() {
                                 timeframe: "1 Hr."
                             }}
                         />
-                        {/* Bot 2: XAU/USD [cite: 155, 158] */}
+                        {/* Bot 2: XAU/USD */}
                         <BotCard
                             icon={<Coins className="w-6 h-6 text-yellow-600" />}
                             title="XAU / USD Bot"
@@ -116,7 +110,7 @@ export default function Home() {
                                 timeframe: "1 Hr."
                             }}
                         />
-                        {/* Bot 3: JPY/USD [cite: 156, 168, 169] */}
+                        {/* Bot 3: JPY/USD */}
                         <BotCard
                             icon={<DollarSign className="w-6 h-6 text-purple-600" />}
                             title="JPY / USD Bot"
@@ -131,7 +125,7 @@ export default function Home() {
                 </div>
             </section>
 
-            {/* ================= How It Works Section [cite: 162-171] ================= */}
+            {/* ================= How It Works Section ================= */}
             <section className="py-24 px-6 bg-white">
                 <div className="max-w-7xl mx-auto">
                     <div className="text-center mb-20 space-y-4">
@@ -142,19 +136,19 @@ export default function Home() {
                     </div>
 
                     <div className="grid md:grid-cols-3 gap-12 text-center">
-                        {/* Feature 1 [cite: 163, 164] */}
+                        {/* Feature 1 */}
                         <FeatureItem
                             icon={<Zap className="w-10 h-10 text-blue-600" />}
                             title="AI-Powered Bots"
                             desc="Advanced machine learning algorithms analyze market trends and execute trades automatically"
                         />
-                        {/* Feature 2 [cite: 165, 166] */}
+                        {/* Feature 2 */}
                         <FeatureItem
                             icon={<ShieldCheck className="w-10 h-10 text-blue-600" />}
                             title="Secure & Reliable"
                             desc="Bank-level security with 99.9% uptime guarantee for uninterrupted Trading"
                         />
-                        {/* Feature 3 [cite: 170, 171] */}
+                        {/* Feature 3 */}
                         <FeatureItem
                             icon={<BarChart3 className="w-10 h-10 text-blue-600" />}
                             title="Real-time Analytics"
@@ -164,7 +158,7 @@ export default function Home() {
                 </div>
             </section>
 
-            {/* ================= Pricing Section [cite: 175-191] ================= */}
+            {/* ================= Pricing Section ================= */}
             <section className="py-24 px-6 bg-slate-900 text-white">
                 <div className="max-w-7xl mx-auto">
                     <div className="text-center mb-16 space-y-4">
@@ -175,7 +169,7 @@ export default function Home() {
                     </div>
 
                     <div className="grid md:grid-cols-3 gap-8">
-                        {/* Pricing Card 1 [cite: 178-182] */}
+                        {/* Pricing Card 1  */}
                         <PricingCard
                             title="10% Commission"
                             desc="We only charge 10% of your actual profits. No hidden fees, no monthly subscriptions"
@@ -189,7 +183,7 @@ export default function Home() {
                             </div>
                         </PricingCard>
 
-                        {/* Pricing Card 2 [cite: 183-187] */}
+                        {/* Pricing Card 2 */}
                         <PricingCard
                             title="90% Your Profits"
                             desc="Keep the vast majority of your trading profits. Our success is directly tied to your success"
@@ -203,7 +197,7 @@ export default function Home() {
                             </div>
                         </PricingCard>
 
-                        {/* Pricing Card 3 [cite: 188-191] */}
+                        {/* Pricing Card 3 */}
                         <PricingCard
                             title="No Loss, No Fee"
                             desc="If the bot doesn't make profit, you pay nothing. We only charge when you earn."
@@ -220,7 +214,7 @@ export default function Home() {
                 </div>
             </section>
 
-            {/* ================= CTA Section [cite: 172-174] ================= */}
+            {/* ================= CTA Section ================= */}
             <section className="py-24 bg-blue-50 text-center">
                 <div className="max-w-4xl mx-auto px-6">
                     <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-6">Ready to Start Your Trading Journey? </h2>
@@ -235,7 +229,7 @@ export default function Home() {
                 </div>
             </section>
 
-            {/* ================= Footer [cite: 192-193] ================= */}
+            {/* ================= Footer ================= */}
             <footer className="bg-white border-t py-12 text-center text-slate-500 text-sm">
                 <div className="max-w-7xl mx-auto px-6">
                     <p className="mb-3 font-medium">© 2026 TradingBot All rights reserved </p>

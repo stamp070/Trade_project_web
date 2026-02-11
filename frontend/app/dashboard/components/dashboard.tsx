@@ -24,6 +24,18 @@ const accounts = [
     },
 ]
 
+const accountDetails = {
+    name: "Demo Account",
+    id: "12345678",
+    token: "demo-token-1234567890abcdef1234567890abcdef",
+    status: "Connected",
+    balance: 10000.00,
+    pnl: 1248,
+    totalOrders: 100,
+    totalWins: 50,
+    winRate: 50,
+}
+
 const overallEquityData = [
     { month: "Jan", equity: 8600 },
     { month: "Feb", equity: 9550 },
@@ -60,6 +72,38 @@ export default function Dashboard() {
                                 countValue={2}
                                 countLabel="Current Accounts"
                             />
+                        </div>
+                    </div>
+
+                    {/* Bottom Stats Row */}
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-8 border-t pt-8">
+                        <div className="text-center">
+                            <p className="text-xs text-slate-500 mb-1">Balance</p>
+                            <div className="flex items-baseline justify-center gap-2">
+                                <span className="text-3xl font-bold text-slate-900">฿{Math.floor(accountDetails.balance).toLocaleString()}</span>
+                                <span className="text-sm font-medium text-emerald-500">({accountDetails.pnl > 0 ? "+" : ""} ฿{accountDetails.pnl} )</span>
+                            </div>
+                        </div>
+                        <div className="text-center">
+                            <p className="text-xs text-slate-500 mb-1">Total Trades</p>
+                            <div className="flex items-baseline justify-center gap-1">
+                                <span className="text-3xl font-bold text-slate-900">{accountDetails.totalOrders}</span>
+                                <span className="text-xs text-slate-400">Orders</span>
+                            </div>
+                        </div>
+                        <div className="text-center">
+                            <p className="text-xs text-slate-500 mb-1">Total Wins</p>
+                            <div className="flex items-baseline justify-center gap-1">
+                                <span className="text-3xl font-bold text-slate-900">{accountDetails.totalWins}</span>
+                                <span className="text-xs text-slate-400">Orders</span>
+                            </div>
+                        </div>
+                        <div className="text-center">
+                            <p className="text-xs text-slate-500 mb-1">Win Rate</p>
+                            <div className="flex items-baseline justify-center gap-1">
+                                <span className="text-3xl font-bold text-slate-900">{accountDetails.winRate}</span>
+                                <span className="text-sm font-bold text-slate-400">%</span>
+                            </div>
                         </div>
                     </div>
 
@@ -107,7 +151,7 @@ export default function Dashboard() {
                                             <TableCell className="text-right font-bold text-slate-900">฿{account.balance.toLocaleString()}</TableCell>
                                             <TableCell className="text-right">
                                                 <Button variant="ghost" size="icon" className="hover:text-red-600 hover:bg-red-50">
-                                                    <Trash2 className="w-4 h-4 text-slate-400 hover:text-red-500 text-red-500" />
+                                                    <Trash2 className="w-4 h-4 text-red-600" />
                                                 </Button>
                                             </TableCell>
                                         </TableRow>
