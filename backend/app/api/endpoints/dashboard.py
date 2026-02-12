@@ -1,10 +1,16 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from app.core.security import get_current_user
-from app.services.dashboard_service import get_dashboard_data
+from app.services.dashboard_service import get_overview_data, get_account_detail
 
 router = APIRouter()
 
 @router.get("/")
-def read_dashboard_data(current_user = Depends(get_current_user)):
-    # current_user is the Supabase User object, it has an 'id' attribute
-    return get_dashboard_data(current_user.id)
+def read_dashboard_overview(current_user = Depends(get_current_user)):
+    return get_overview_data(current_user.id)
+
+@router.get("/{account_id}")
+def read_account_detail(account_id: str, current_user = Depends(get_current_user)):
+    data = get_account_detail(current_user.id, account_id)
+    if not data:
+        raise HTTPException(status_code=404, detail="Account not found")
+    return data

@@ -9,9 +9,9 @@ export default function DashboardLayout({
     children: React.ReactNode
 }) {
     return (
-        <div>
+        <div className="bg-slate-50/50">
             <Navbar />
-            <div className='flex flex-col md:flex-row gap-6 max-w-7xl mx-auto px-6 py-6'>
+            <div className='flex flex-col md:flex-row gap-6 max-w-7xl mx-auto px-6 py-6 '>
                 <div className='w-full md:w-64 shrink-0'>
                     <Sidebar />
                 </div>

@@ -7,7 +7,6 @@ import { useAuth } from "@/components/provider/auth-provider"
 
 export default function Navbar() {
     const { user, isAdmin } = useAuth()
-    console.log(user)
     return (
         <nav className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
             <div className="flex h-16 items-center justify-between px-6 max-w-7xl mx-auto">

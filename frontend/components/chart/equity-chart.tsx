@@ -17,34 +17,29 @@ import {
     ChartTooltipContent,
     type ChartConfig,
 } from "@/components/ui/chart"
+import { PnlGraph, DashboardAccountsData } from "@/types/dashboard"
 
 export const description = "A linear line chart"
 
-
-export type EquityData = {
-    month: string;
-    equity: number;
-}
-
 const chartConfig: ChartConfig = {
-    equity: {
-        label: "equity",
+    pnl: {
+        label: "pnl",
         color: "var(--chart-1)",
     },
 }
 
 interface EquityChartProps {
-    data: EquityData[]
+    data: PnlGraph[]
 }
 
 export function EquityChart({ data }: EquityChartProps) {
     return (
-        <Card>
+        <Card className={`flex flex-col h-full`}>
             <CardHeader>
-                <CardTitle>Profit & Loss Overview</CardTitle>
+                <CardTitle className="text-lg">Profit & Loss Overview</CardTitle>
             </CardHeader>
-            <CardContent>
-                <ChartContainer config={chartConfig}>
+            <CardContent className="flex-1 min-h-0">
+                <ChartContainer config={chartConfig} className="max-h-full w-full h-full">
                     <LineChart
                         accessibilityLayer
                         data={data}
@@ -55,20 +50,19 @@ export function EquityChart({ data }: EquityChartProps) {
                     >
                         <CartesianGrid vertical={false} />
                         <XAxis
-                            dataKey="month"
+                            dataKey="day"
                             tickLine={false}
                             axisLine={false}
                             tickMargin={8}
-                            tickFormatter={(value) => value.slice(0, 3)}
                         />
                         <ChartTooltip
                             cursor={false}
                             content={<ChartTooltipContent hideLabel />}
                         />
                         <Line
-                            dataKey="equity"
+                            dataKey="pnl"
                             type="linear"
-                            stroke="var(--color-equity)"
+                            stroke="var(--color-pnl)"
                             strokeWidth={2}
                             dot={false}
                         />

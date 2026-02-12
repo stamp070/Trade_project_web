@@ -19,7 +19,8 @@ app.add_middleware(
 )
 
 # Include Routers
-app.include_router(dashboard.router, prefix="/api/dashboard", tags=["dashboard"])
+app.include_router(dashboard.router, prefix="/api/overview", tags=["overview"])
+app.include_router(dashboard.router, prefix="/api/account", tags=["account"])   
 
 @app.get("/")
 def read_root():
