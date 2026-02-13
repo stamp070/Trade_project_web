@@ -9,6 +9,10 @@ class Settings(BaseSettings):
 
     API_HOST: str = "[IP_ADDRESS]"
     API_PORT: int = 8000
+
+    STRIPE_PUBLISHABLE_KEY: str
+    STRIPE_SECRET_KEY: str
+    STRIPE_WEBHOOK_SECRET: str
     
     class Config:
         env_file = ".env"

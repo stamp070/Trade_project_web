@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api.endpoints import dashboard
+from app.api.endpoints import dashboard, payment, webhook
 
 app = FastAPI(title="Trade Project API", content_docs_url="/docs", redoc_url=None)
 
@@ -14,13 +14,16 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["GET", "POST"],
+    allow_methods=["GET", "POST", "PUT", "DELETE"],
     allow_headers=["*"],
 )
 
 # Include Routers
 app.include_router(dashboard.router, prefix="/api/overview", tags=["overview"])
 app.include_router(dashboard.router, prefix="/api/account", tags=["account"])   
+app.include_router(dashboard.router, prefix="/api/bots", tags=["bots"])
+app.include_router(payment.router, prefix="/api/payment", tags=["payment"])
+app.include_router(webhook.router, prefix="/api/stripe", tags=["webhook"])
 
 @app.get("/")
 def read_root():

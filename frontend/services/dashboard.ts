@@ -1,4 +1,4 @@
-import { DashboardData, DashboardAccountsData, Account } from "@/types/dashboard"
+import { DashboardData, DashboardAccountsData, Account, Bot } from "@/types/dashboard"
 
 
 // Debugging helper
@@ -50,6 +50,31 @@ export async function getDashboardAccounts(token: string, account_id: string): P
         return res.json()
     } catch (error) {
         console.error("Error fetching dashboard account data:", error)
+        return null
+    }
+}
+
+export async function updateBotStatus(token: string, bot_id: string, connection: string): Promise<Bot[] | null> {
+    try {
+        console.log(`Updating bot status from: ${API_URL}/api/bots/${bot_id}/${connection}`)
+
+        const res = await fetch(`${API_URL}/api/bots/${bot_id}/${connection}`, {
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+            cache: 'no-store'
+        })
+
+        if (!res.ok) {
+            console.error(`Status: ${res.status} ${res.statusText}`)
+            const errorBody = await res.text()
+            console.error("Error Body:", errorBody)
+            throw new Error(`Failed to fetch data: ${res.status} ${res.statusText}`)
+        }
+        return res.json()
+    } catch (error) {
+        console.error("Error updating bot status:", error)
         return null
     }
 }

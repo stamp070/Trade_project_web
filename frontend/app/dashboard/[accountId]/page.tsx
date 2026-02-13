@@ -20,8 +20,8 @@ import { EquityChart } from "@/components/chart/equity-chart"
 import PnlChart from "@/components/chart/pnl-chart"
 import { Switch } from "@/components/ui/switch"
 import { useState, useEffect } from "react"
-import { getDashboardAccounts } from "@/services/dashboard"
-import { DashboardAccountsData } from "@/types/dashboard"
+import { getDashboardAccounts, updateBotStatus } from "@/services/dashboard"
+import { DashboardAccountsData, Bot } from "@/types/dashboard"
 import { useAuth } from "@/components/provider/auth-provider"
 
 
@@ -33,6 +33,8 @@ export default function AccountDetailPage() {
     const [dashboardData, setDashboardData] = useState<DashboardAccountsData | null>()
 
     const [isLoading, setIsLoading] = useState(true)
+
+    const [isBotConnected, setIsBotConnected] = useState<Bot[] | null>()
     useEffect(() => {
         const fetchDashboardAccount = async () => {
             if (isAuthLoading) return
@@ -40,6 +42,8 @@ export default function AccountDetailPage() {
             try {
                 const res = await getDashboardAccounts(token || "", accountId)
                 setDashboardData(res)
+                setIsBotConnected(res?.bots)
+
             } catch (error) {
                 console.error("Error fetching dashboard account data:", error)
             } finally {
@@ -49,6 +53,37 @@ export default function AccountDetailPage() {
         fetchDashboardAccount()
 
     }, [session, isAuthLoading, accountId])
+
+    const handleToggleBot = async (index: number, checked: boolean) => {
+        const bot = isBotConnected?.[index]
+        if (!bot) return
+
+        const newStatus = checked ? "Connected" : "Disconected"
+        const previousBots = isBotConnected
+        setIsBotConnected(prev => prev?.map((b, i) => i === index ? { ...b, connection: newStatus } : b))
+        try {
+            const updatedBots = await updateBotStatus(session?.access_token || "", bot.bot_id, newStatus)
+
+            if (updatedBots && updatedBots.length > 0) {
+                const updatedBotFromApi = updatedBots[0]
+
+                setDashboardData(prev => {
+                    if (!prev) return prev
+                    return {
+                        ...prev,
+                        bots: prev.bots.map(b => b.bot_id === bot.bot_id ? { ...b, connection: updatedBotFromApi.connection } : b)
+                    }
+                })
+
+                setIsBotConnected(prev => prev?.map(b => b.bot_id === bot.bot_id ? { ...b, connection: updatedBotFromApi.connection } : b))
+            } else {
+                setIsBotConnected(previousBots)
+            }
+        } catch (error) {
+            console.error("Error updating bot status:", error)
+            setIsBotConnected(previousBots)
+        }
+    }
 
     if (isLoading) {
         return (
@@ -106,14 +141,7 @@ export default function AccountDetailPage() {
             </div>
         )
     }
-    console.log(dashboardData)
 
-    const handleToggleBot = (index: number, checked: boolean) => {
-
-
-        // api backend
-
-    }
     return (
         <div className="space-y-6 p-6 min-h-screen bg-slate-50/50">
             {/* Top Section: Charts & Stats */}
@@ -136,7 +164,7 @@ export default function AccountDetailPage() {
                                 </Card>
                                 <Card className="flex flex-col items-center justify-center p-4 shadow-sm border-none bg-white">
                                     <div className="text-lg font-semibold mb-1 text-slate-700">Current Active Bots</div>
-                                    <div className="text-4xl font-bold text-slate-900">{dashboardData?.active_bots}</div>
+                                    <div className="text-4xl font-bold text-slate-900">{dashboardData?.bots.filter((bot) => bot.connection === "Connected").length}</div>
                                     <div className="text-xs text-slate-400 mt-1">bots</div>
                                 </Card>
                             </div>
@@ -185,14 +213,14 @@ export default function AccountDetailPage() {
                 <h2 className="text-lg font-bold text-slate-900 mb-6">Trading Bots Performance</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {dashboardData?.bots.map((bot, index) => (
-                        <div key={index} className="border rounded-xl p-4 hover:shadow-md transition-shadow">
+                        <div key={bot.bot_id} className="border rounded-xl p-4 hover:shadow-md transition-shadow">
                             <div className="flex justify-between items-start mb-4">
                                 <div>
                                     <h3 className="font-bold text-slate-900">{bot.name}</h3>
                                     <p className="text-xs text-slate-500 mt-0.5">Version <span className="text-slate-700 font-medium ml-1">{bot.version}</span></p>
                                 </div>
-                                <Badge variant="secondary" className={`${bot.status === 'Active' ? 'bg-emerald-100 text-emerald-700' : 'bg-yellow-100 text-yellow-700'} font-normal`}>
-                                    {bot.status}
+                                <Badge variant="secondary" className={`${bot.connection === 'Connected' ? 'bg-emerald-100 text-emerald-700' : 'bg-yellow-100 text-yellow-700'} font-normal`}>
+                                    {bot.connection}
                                 </Badge>
                             </div>
 
@@ -211,8 +239,8 @@ export default function AccountDetailPage() {
                                 </div>
                                 <div className="flex justify-between items-center text-sm">
                                     <span className="text-slate-500">Connection</span>
-                                    <Badge variant="secondary" className={`${bot.status === 'Connected' ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-600'} font-normal`}>
-                                        {bot.status}
+                                    <Badge variant="secondary" className={`${isBotConnected?.[index]?.connection === 'Connected' ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-600'} font-normal`}>
+                                        {isBotConnected?.[index]?.connection === "Connected" ? "Active" : "Inactive"}
                                     </Badge>
                                 </div>
                             </div>
@@ -220,9 +248,9 @@ export default function AccountDetailPage() {
                             <div className="flex justify-between items-center pt-3 border-t">
                                 <div className="flex items-center gap-2">
                                     <span className="text-xs text-slate-500">Status :</span>
-                                    <Switch checked={bot.status === 'Active'}
+                                    <Switch checked={isBotConnected?.[index]?.connection === 'Connected'}
                                         onCheckedChange={(checked) => handleToggleBot(index, checked)}
-                                        className=" origin-left" />
+                                        className=" origin-left cursor-pointer" />
                                 </div>
                                 <span className="text-xs text-slate-400">Trades: {bot.trades}</span>
                             </div>

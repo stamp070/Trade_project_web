@@ -6,21 +6,23 @@ import { SignOutButton } from "./sign-out-button"
 import { useAuth } from "@/components/provider/auth-provider"
 
 export default function Navbar() {
-    const { user, isAdmin } = useAuth()
+    const { user, isAdmin, session } = useAuth()
+    console.log(session?.access_token)
     return (
         <nav className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
             <div className="flex h-16 items-center justify-between px-6 max-w-7xl mx-auto">
 
                 {/* --- 1. Logo Section (Left) --- */}
-                <div className="flex items-center gap-2">
-                    <div className="bg-blue-600 p-1.5 rounded-lg">
-                        <LineChart className="text-white w-5 h-5" />
+                <Link href="/">
+                    <div className="flex items-center gap-2">
+                        <div className="bg-blue-600 p-1.5 rounded-lg">
+                            <LineChart className="text-white w-5 h-5" />
+                        </div>
+                        <span className="text-xl font-bold tracking-tight text-blue-900">
+                            TradingBot
+                        </span>
                     </div>
-                    <span className="text-xl font-bold tracking-tight text-blue-900">
-                        TradingBot
-                    </span>
-                </div>
-
+                </Link>
                 {/* --- 2. Menu Links (Center) --- */}
                 {/* ซ่อนบนมือถือ (hidden md:flex) เพื่อไม่ให้รก */}
                 <div className="hidden md:flex">

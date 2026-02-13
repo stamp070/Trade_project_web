@@ -33,11 +33,12 @@ export interface DashboardData {
 }
 
 export interface Bot {
+    bot_id: string
     name: string
     version: string
     pnl: number
     today: number
-    status: string
+    connection: string
     trades: number
 }
 

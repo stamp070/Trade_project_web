@@ -11,8 +11,8 @@ def get_overview_data(user_id: str):
     total_balance = sum(account['balance'] for account in accounts)
 
     # 2. Get All Bots for User (to calc active bots)
-    bots_response = supabase.table("bots").select("bot_id, status, mt5_id").eq("user_id", user_id).execute()
-    active_bots = sum(1 for bot in bots_response.data if bot['status'] in ['ACTIVE']) if bots_response.data else 0
+    bots_response = supabase.table("bots").select("bot_id, connection, mt5_id").eq("user_id", user_id).execute()
+    active_bots = sum(1 for bot in bots_response.data if bot['connection'] in ['Connection']) if bots_response.data else 0
     bot_ids = [bot['bot_id'] for bot in bots_response.data] if bots_response.data else []
 
 
@@ -92,7 +92,7 @@ def get_account_detail(user_id: str, account_id: str):
     total_pnl = sum(t['profit_loss'] for t in transactions)
     total_wins = sum(1 for t in transactions if t['profit_loss'] > 0)
     win_rate = (total_wins / total_orders * 100) if total_orders > 0 else 0
-    active_bots_count = sum(1 for bot in bots if bot['status'] == 'ACTIVE')
+    active_bots_count = sum(1 for bot in bots if bot['connection'] == 'ACTIVE')
 
     # 5. Process Bot Performance
     bots_data = []
@@ -108,11 +108,12 @@ def get_account_detail(user_id: str, account_id: str):
         version_name = bot.get('bots_version', {}).get('version_name', 'Unknown') if bot.get('bots_version') else 'Unknown'
 
         bots_data.append({
+            "bot_id": bot['bot_id'],
             "name": f"Bot {bot.get('currency', 'Unknown')}",
             "version": version_name,
             "pnl": bot_pnl,
             "today": today_pnl,
-            "status": bot['status'],
+            "connection": bot['connection'],
             "trades": bot_trades_count
         })
 
