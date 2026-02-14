@@ -1,35 +1,81 @@
+"use client"
+import { useState, useEffect } from "react"
+import * as z from "zod"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
-import * as z from "zod"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/components/provider/auth-provider";
+import { createToken, createAccount } from "@/services/mt5";
 
 interface Mt5ModalProps {
     isOpen: boolean;
     onOpenChange: (open: boolean) => void;
 }
-const Token = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 const formSchema = z.object({
-    name: z.string().min(3, "Name must be at least 3 characters long"),
-    mt5_id: z.string().length(10, "MT5 ID must be 10 digits").regex(/^\d+$/, "Must be only digits"),
+    account_name: z.string().min(3, "Name must be at least 3 characters long"),
+    mt5_name: z.string().length(10, "MT5 ID must be 10 digits").regex(/^\d+$/, "Must be only digits"),
 })
-// mock token
-
 export default function Mt5Modal({ isOpen, onOpenChange }: Mt5ModalProps) {
+    const { session, isLoading: isAuthLoading } = useAuth()
+    const [token, setToken] = useState("")
+
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            name: "",
-            mt5_id: "",
+            account_name: "",
+            mt5_name: "",
         },
     })
+    const mt5Name = form.watch("mt5_name")
+    const accountName = form.watch("account_name")
 
-    function onSubmit(values: z.infer<typeof formSchema>) {
-        console.log(values)
-        onOpenChange(false)
+    async function onSubmit() {
+        try {
+            const res = await createAccount(session?.access_token || "", {
+                mt5_name: mt5Name,
+                account_name: accountName,
+                token: token,
+            })
+            if (res?.status == "success") {
+                onOpenChange(false)
+                form.reset()
+            }
+        } catch (error) {
+            console.error("Error generating token:", error)
+        }
     }
+
+    const generateToken = async () => {
+        try {
+            const res = await createToken(session?.access_token || "", {
+                mt5_name: mt5Name,
+                account_name: accountName,
+            })
+            if (res?.status == "success") {
+                setToken(res?.token || "")
+            }
+        } catch (error) {
+            console.error("Error generating token:", error)
+        }
+    }
+
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            if (mt5Name && accountName && mt5Name.length === 10) {
+                generateToken()
+            } else {
+                setToken("")
+            }
+        }, 300)
+
+        return () => clearTimeout(timer)
+    }, [mt5Name, accountName])
+
+
     return (
         <Dialog open={isOpen} onOpenChange={onOpenChange}>
             <DialogContent>
@@ -43,7 +89,7 @@ export default function Mt5Modal({ isOpen, onOpenChange }: Mt5ModalProps) {
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                         <FormField
                             control={form.control}
-                            name="name"
+                            name="account_name"
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Name</FormLabel>
@@ -52,11 +98,12 @@ export default function Mt5Modal({ isOpen, onOpenChange }: Mt5ModalProps) {
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
+
                             )}
                         />
                         <FormField
                             control={form.control}
-                            name="mt5_id"
+                            name="mt5_name"
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>MT5 ID</FormLabel>
@@ -67,17 +114,20 @@ export default function Mt5Modal({ isOpen, onOpenChange }: Mt5ModalProps) {
                                 </FormItem>
                             )}
                         />
-                        <FormItem>
+                        {<FormItem>
                             <FormLabel>Token</FormLabel>
                             <Input
-                                placeholder={Token}
-
+                                value={token}
+                                placeholder="TOKEN FOR AUTHENTICATE"
+                                readOnly
                                 className="bg-slate-100 text-slate-500 cursor-pointer font-mono"
-                                onClick={() => navigator.clipboard.writeText(Token)}
+                                onClick={() => {
+                                    navigator.clipboard.writeText(token)
+                                }}
                             />
-                        </FormItem>
-
-                        <Button type="submit" >Submit</Button>
+                            <p className="text-xs text-slate-600">Click to copy token</p>
+                        </FormItem>}
+                        <Button type="submit" disabled={!token}>Submit</Button>
                     </form>
                 </Form>
             </DialogContent>

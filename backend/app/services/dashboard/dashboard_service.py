@@ -5,7 +5,7 @@ def get_overview_data(user_id: str):
     supabase = get_supabase_client()
     
     # 1. Get Accounts
-    accounts_response = supabase.table("mts_accounts").select("*").eq("user_id", user_id).execute()
+    accounts_response = supabase.table("mt5_accounts").select("*").eq("user_id", user_id).execute()
     accounts = accounts_response.data if accounts_response.data else []
     
     total_balance = sum(account['balance'] for account in accounts)
@@ -69,7 +69,7 @@ def get_account_detail(user_id: str, account_id: str):
     supabase = get_supabase_client()
 
     # 1. Get Account Info
-    account_response = supabase.table("mts_accounts").select("*").eq("mt5_id", account_id).eq("user_id", user_id).single().execute()
+    account_response = supabase.table("mt5_accounts").select("*").eq("mt5_id", account_id).eq("user_id", user_id).single().execute()
     account = account_response.data
     
     if not account:

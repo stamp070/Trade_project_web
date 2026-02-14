@@ -33,13 +33,15 @@ create table public.ppo_model (
   constraint ppo_model_pkey primary key (ppo_model_id)
 ) TABLESPACE pg_default;
 
-create table public.mts_accounts (
+create table public.mt5_accounts (
   mt5_id uuid not null default extensions.uuid_generate_v4 (),
   user_id uuid not null,
   account_name character varying null,
   token character varying not null,
   balance numeric(20, 2) null default 0.00,
   created_at timestamp with time zone null default now(),
+  status public.mt5_status_enum not null default 'Disconnected'::mt5_status_enum,
+  mt5_name bigint null,
   constraint mts_accounts_pkey primary key (mt5_id),
   constraint mts_accounts_user_id_fkey foreign KEY (user_id) references profile (user_id) on delete CASCADE
 ) TABLESPACE pg_default;
@@ -85,10 +87,11 @@ create table public.bots (
   mt5_id uuid null,
   version_id uuid null,
   currency character varying(10) null,
-  status public.bot_status_enum null default 'STOPPED'::bot_status_enum,
+  connection public.bot_connection_enum null default 'Disconected'::bot_connection_enum,
   created_at timestamp with time zone null default now(),
   constraint bots_pkey primary key (bot_id),
-  constraint bots_mt5_id_fkey foreign KEY (mt5_id) references mts_accounts (mt5_id),
+  constraint unique_currency unique (mt5_id, currency),
+  constraint bots_mt5_id_fkey foreign KEY (mt5_id) references mt5_accounts (mt5_id),
   constraint bots_user_id_fkey foreign KEY (user_id) references profile (user_id) on delete CASCADE,
   constraint bots_version_id_fkey foreign KEY (version_id) references bots_version (version_id)
 ) TABLESPACE pg_default;

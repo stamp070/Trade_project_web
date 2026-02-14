@@ -8,6 +8,7 @@ app = FastAPI(title="Trade Project API", content_docs_url="/docs", redoc_url=Non
 origins = [
     "http://localhost:3000",
     "http://localhost:8000",
+    "https://nena-precontractual-alfonso.ngrok-free.dev/"
 ]
 
 app.add_middleware(
@@ -19,9 +20,7 @@ app.add_middleware(
 )
 
 # Include Routers
-app.include_router(dashboard.router, prefix="/api/overview", tags=["overview"])
-app.include_router(dashboard.router, prefix="/api/account", tags=["account"])   
-app.include_router(dashboard.router, prefix="/api/bots", tags=["bots"])
+app.include_router(dashboard.router, prefix="/api", tags=["dashboard"])
 app.include_router(payment.router, prefix="/api/payment", tags=["payment"])
 app.include_router(webhook.router, prefix="/api/stripe", tags=["webhook"])
 

@@ -165,9 +165,9 @@ export default function Dashboard() {
                                     {dashboardData?.accounts.map((account, index) => (
                                         <TableRow key={index} className="hover:bg-slate-50">
                                             <TableCell className="font-medium text-slate-900">{account.account_name}</TableCell>
-                                            <TableCell className="text-slate-500">{account.mt5_id}</TableCell>
+                                            <TableCell className="text-slate-500">{account.mt5_name}</TableCell>
                                             <TableCell className="font-mono text-xs text-slate-400">
-                                                {account.token ? `${account.token.substring(0, 8)}...` : '-'}
+                                                {account.token ? `${account.token}` : '-'}
                                             </TableCell>
                                             <TableCell>
                                                 {account.status === "Connected" ?

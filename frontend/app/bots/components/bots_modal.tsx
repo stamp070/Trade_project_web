@@ -1,30 +1,16 @@
 import React, { useState } from 'react';
-
-interface BotVersion {
-    id: string;
-    label: string;
-}
-
-interface MT5Account {
-    id: string;
-    label: string;
-}
+import { BotOption } from "@/types/bot"
 
 interface BotsModalProps {
+    name: string;
     isOpen: boolean;
     onClose: () => void;
-    versions: BotVersion[];
-    accounts: MT5Account[];
+    versions: BotOption[];
+    accounts: BotOption[];
     onConfirm: (versionId: string, accountId: string) => void;
 }
 
-export const BotsModal: React.FC<BotsModalProps> = ({
-    isOpen,
-    onClose,
-    versions,
-    accounts,
-    onConfirm,
-}) => {
+export default function BotsModal({ name, isOpen, onClose, versions, accounts, onConfirm }: BotsModalProps) {
     const [selectedVersion, setSelectedVersion] = useState<string>('');
     const [selectedAccount, setSelectedAccount] = useState<string>('');
 
@@ -40,8 +26,8 @@ export const BotsModal: React.FC<BotsModalProps> = ({
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-md">
-                <h2 className="text-xl font-semibold mb-4">Configure Bot Deployment</h2>
-
+                <h2 className="text-2xl font-semibold mb-4 text-center">{name}</h2>
+                <h3 className="text-md font-medium mb-4 text-center text-slate-500">Select your Bot version and your MT5 account</h3>
                 <div className="space-y-4">
                     <div>
                         <label className="block text-sm font-medium mb-1">Select Bot Version</label>

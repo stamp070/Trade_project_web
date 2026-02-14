@@ -1,13 +1,9 @@
 import { DashboardData, DashboardAccountsData, Account, Bot } from "@/types/dashboard"
 
-
-// Debugging helper
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
 
 export async function getDashboardOverview(token: string): Promise<DashboardData | null> {
     try {
-        console.log(`Fetching dashboard from: ${API_URL}/api/overview`)
-
         const res = await fetch(`${API_URL}/api/overview`, {
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -31,8 +27,6 @@ export async function getDashboardOverview(token: string): Promise<DashboardData
 
 export async function getDashboardAccounts(token: string, account_id: string): Promise<DashboardAccountsData | null> {
     try {
-        console.log(`Fetching dashboard from: ${API_URL}/api/account/${account_id}`)
-
         const res = await fetch(`${API_URL}/api/account/${account_id}`, {
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -56,8 +50,6 @@ export async function getDashboardAccounts(token: string, account_id: string): P
 
 export async function updateBotStatus(token: string, bot_id: string, connection: string): Promise<Bot[] | null> {
     try {
-        console.log(`Updating bot status from: ${API_URL}/api/bots/${bot_id}/${connection}`)
-
         const res = await fetch(`${API_URL}/api/bots/${bot_id}/${connection}`, {
             method: "POST",
             headers: {

@@ -1,6 +1,5 @@
 
 
-import Navbar from '@/components/navbar/Navbar'
 import Sidebar from './components/sidebar'
 
 export default function DashboardLayout({
@@ -10,7 +9,6 @@ export default function DashboardLayout({
 }) {
     return (
         <div className="bg-slate-50/50">
-            <Navbar />
             <div className='flex flex-col md:flex-row gap-6 max-w-7xl mx-auto px-6 py-6 '>
                 <div className='w-full md:w-64 shrink-0'>
                     <Sidebar />

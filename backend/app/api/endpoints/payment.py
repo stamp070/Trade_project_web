@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from app.schema.payment import CheckoutRequest
-from app.services.payment_service import create_checkout_session_service, get_invoice_data
+from app.services.payment.payment_service import create_checkout_session_service, get_invoice_data
 from app.core.security import get_current_user
 
 router = APIRouter()

@@ -8,7 +8,11 @@ import {
     CardTitle,
 } from "@/components/ui/card"
 import { useState } from "react"
-import { BotsModal } from "./bots_modal"
+import BotsModal from "./bots_modal"
+import { BotOption } from "@/types/bot"
+import { createBot } from "@/services/bot"
+import { useAuth } from "@/components/provider/auth-provider"
+import { BotCreate } from "@/types/bot"
 
 interface BotsCardProps {
     name: string
@@ -16,8 +20,8 @@ interface BotsCardProps {
     maxDd: number
     timeframe: string
     lastUpdate: string
-    versions: { id: string; label: string }[]
-    accounts: { id: string; label: string }[]
+    versions: BotOption[]
+    accounts: BotOption[]
 }
 
 export default function BotsCard({
@@ -30,10 +34,13 @@ export default function BotsCard({
     accounts
 }: BotsCardProps) {
     const [open, setOpen] = useState(false)
+    const { session } = useAuth()
+    const token = session?.access_token
 
     const handleConnect = () => {
         setOpen(true)
     }
+
 
     return (
         <div className="w-3/4">
@@ -75,13 +82,24 @@ export default function BotsCard({
             </Card>
             {open && (
                 <BotsModal
+                    name={name}
                     isOpen={open}
                     onClose={() => setOpen(false)}
                     versions={versions}
                     accounts={accounts}
                     onConfirm={(versionId, accountId) => {
                         console.log('Selected:', versionId, accountId);
-                        // TODO: Implement API call to connect bot
+                        const json: BotCreate = {
+                            "version_id": versionId,
+                            "mt5_id": accountId,
+                            "currency": name
+                        }
+                        const fetch = async () => {
+                            const data = await createBot(token || "", json)
+                            console.log(data)
+                        }
+                        fetch()
+
                     }}
                 />
             )}

@@ -9,6 +9,17 @@ export interface PnlCircle {
     value: number
 }
 
+export interface mt5_data {
+    mt5_name: string
+    account_name: string
+}
+
+export interface mt5_account {
+    mt5_name: string
+    account_name: string
+    token: string
+}
+
 export interface Account {
     mt5_id: string
     user_id: string

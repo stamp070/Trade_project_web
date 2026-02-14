@@ -41,6 +41,7 @@ export default function Sidebar() {
         }
         fetchData()
     }, [session, isAuthLoading])
+    console.log(session?.access_token)
 
     if (isLoading) {
         return (

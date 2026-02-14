@@ -19,6 +19,7 @@ export default function RootLayout({
             <body className={`${kanit.className} antialiased min-h-screen bg-main`}>
                 <main className="text-main-color max-w-full mx-auto">
                     <AuthProvider>
+                        <Navbar />
                         {children}
                     </AuthProvider>
                 </main>

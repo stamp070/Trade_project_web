@@ -2,7 +2,7 @@
 import stripe
 from fastapi import APIRouter, Request, HTTPException, Header
 from app.core.config import get_settings
-from app.core.database import get_supabase_admin_client
+from app.core.database import get_supabase_admin_client,get_supabase_client
 from datetime import datetime
 
 router = APIRouter()
@@ -36,7 +36,7 @@ async def stripe_webhook(request: Request, stripe_signature: str = Header(None))
         payment_id = session.get("id")
         
         if invoice_id:
-            supabase = get_supabase_admin_client() # Use Admin client to bypass RLS if needed
+            supabase = get_supabase_client() # Use Admin client to bypass RLS if needed
             
             # Update Invoice Status
             data = {
