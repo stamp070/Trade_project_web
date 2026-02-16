@@ -8,7 +8,6 @@ const COLOR = ["#db2777", "#fbbf24", "#0088FE", "#00C49F", "#FFBB28", "#FF8042",
 export default function PnlChart({ data }: { data: PnlCircle[] }) {
     return (
         <div className="flex flex-col gap-6">
-
             <Card className="border-none shadow-sm bg-white">
                 <CardContent className="p-6">
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-6">

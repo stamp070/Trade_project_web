@@ -140,7 +140,7 @@ export default function BillsPage() {
                                     paidBills.map((bill) => (
                                         <TableRow key={bill.invoice_id} className="hover:bg-slate-50 border-b-slate-50">
                                             <TableCell className="font-medium text-slate-700">
-                                                {bill.invoice_id.slice(0, 8).toUpperCase()}...
+                                                {bill.invoice_id.toUpperCase()}
                                             </TableCell>
                                             <TableCell className="text-slate-600">
                                                 {bill.paid_at ? new Date(bill.paid_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : "-"}

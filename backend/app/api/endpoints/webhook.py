@@ -10,6 +10,7 @@ settings = get_settings()
 
 @router.post("/webhook")
 async def stripe_webhook(request: Request, stripe_signature: str = Header(None)):
+    print("using webhook stripe")
     payload = await request.body()
     sig_header = stripe_signature
     endpoint_secret = settings.STRIPE_WEBHOOK_SECRET # ต้องเพิ่มใน .env

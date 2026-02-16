@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation"
 // สร้าง Interface สำหรับ Context
 interface AuthContextType {
     user: User | null
+    role: string | null
     session: Session | null
     isAdmin: boolean
     isLoading: boolean
@@ -19,6 +20,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [user, setUser] = useState<User | null>(null)
     const [session, setSession] = useState<Session | null>(null)
+    const [role, setRole] = useState<string | null>(null)
     const [isAdmin, setIsAdmin] = useState(false)
     const [isLoading, setIsLoading] = useState(true)
 
@@ -29,37 +31,58 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const fetchSession = async () => {
             try {
                 const { data: { session } } = await supabase.auth.getSession()
+                const { data: { user } } = await supabase.auth.getUser()
 
                 setSession(session)
-                setUser(session?.user ?? null)
+                setUser(user)
 
-                // เช็ค Admin จาก Metadata
-                if (session?.user?.user_metadata?.role === 'admin') {
-                    setIsAdmin(true)
-                } else {
-                    setIsAdmin(false)
-                }
-
+                fetchRole(user?.id ?? "")
             } catch (error) {
                 console.error("Auth error:", error)
             } finally {
                 setIsLoading(false)
             }
         }
+        const fetchRole = async (userID: string) => {
+            try {
+                if (!userID) return
+                console.log("this is user naja", userID)
+                const { data, error } = await supabase
+                    .from("profile")
+                    .select("role") // ดึงมาแค่ role ก็พอครับเพื่อความไว
+                    .eq("user_id", userID)
+                    .single()
+
+                if (error) {
+                    console.error("Error fetching profile from DB:", error.message)
+                    return
+                }
+                setRole(data?.role)
+
+                // เช็ค Admin    
+                if (data?.role === 'admin') {
+                    setIsAdmin(true)
+                } else {
+                    setIsAdmin(false)
+                }
+            } catch (error) {
+                console.error("Auth error:", error)
+            }
+        }
 
         fetchSession()
-
         // ฟัง Event เมื่อมีการ Login/Logout
         const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
             setSession(session)
             setUser(session?.user ?? null)
-
-            if (session?.user?.user_metadata?.role === 'admin') {
-                setIsAdmin(true)
+            if (session?.user) {
+                // ถ้ามี User ให้ดึง Role
+                fetchRole(session.user.id)
             } else {
+                // ถ้าไม่มี User (Logout) ให้เคลียร์ค่า
+                setRole(null)
                 setIsAdmin(false)
             }
-
             setIsLoading(false)
 
             if (_event === 'SIGNED_OUT') {
@@ -77,7 +100,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     return (
-        <AuthContext.Provider value={{ user, session, isAdmin, isLoading, signOut }}>
+        <AuthContext.Provider value={{ user, role, session, isAdmin, isLoading, signOut }}>
             {children}
         </AuthContext.Provider>
     )

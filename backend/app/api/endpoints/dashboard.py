@@ -18,8 +18,6 @@ def read_account_detail(account_id: str, current_user = Depends(get_current_user
         raise HTTPException(status_code=404, detail="Account not found")
     return data
 
-
-
 @router.post("/mt5/create-token")
 def create_token(token_mt5:mt5_data, current_user = Depends(get_current_user)):
     print(token_mt5)

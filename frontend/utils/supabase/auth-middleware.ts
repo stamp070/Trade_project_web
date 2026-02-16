@@ -1,6 +1,7 @@
 // frontend/utils/supabase/middleware.ts
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
+import { useAuth } from '@/components/provider/auth-provider'
 
 export async function updateSession(request: NextRequest) {
     let supabaseResponse = NextResponse.next({
@@ -32,6 +33,7 @@ export async function updateSession(request: NextRequest) {
     const {
         data: { user },
     } = await supabase.auth.getUser()
+    const role = await supabase.from("profile").select("role").eq("user_id", user?.id).single()
 
     const path = request.nextUrl.pathname
 
@@ -59,8 +61,8 @@ export async function updateSession(request: NextRequest) {
 
         // (เพิ่ม) เช็ค Admin Zone
         if (path.startsWith('/admin')) {
-            const role = user.user_metadata?.role
-            if (role !== 'admin') {
+            console.log("this is role", role)
+            if (role.data?.role !== 'admin') {
                 const url = request.nextUrl.clone()
                 url.pathname = '/dashboard' // ดีดกลับ Dashboard ถ้าไม่ใช่ Admin
                 return NextResponse.redirect(url)

@@ -15,7 +15,11 @@ def get_overview_data(user_id: str):
     active_bots = sum(1 for bot in bots_response.data if bot['connection'] in ['Connection']) if bots_response.data else 0
     bot_ids = [bot['bot_id'] for bot in bots_response.data] if bots_response.data else []
 
-
+    total_orders = 0
+    total_pnl = 0
+    total_wins = 0
+    win_rate = 0
+    
     if bot_ids:
         # Get aggregated stats from all bots
         response = supabase.table("transaction").select("profit_loss, close_at, bot_id").in_("bot_id", bot_ids).order("close_at").execute()

@@ -4,13 +4,14 @@ import { LineChart, Menu, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { SignOutButton } from "./sign-out-button"
 import { useAuth } from "@/components/provider/auth-provider"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 
 export default function Navbar() {
     const { user, isAdmin, session } = useAuth()
     const [isMenuOpen, setIsMenuOpen] = useState(false)
 
     const toggleMenu = () => setIsMenuOpen(!isMenuOpen)
+
 
     return (
         <nav className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">

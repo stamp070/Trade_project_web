@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api.endpoints import dashboard, payment, webhook
+from app.api.endpoints import dashboard, payment, webhook, admin
 
 app = FastAPI(title="Trade Project API", content_docs_url="/docs", redoc_url=None)
 
@@ -14,6 +14,7 @@ origins = [
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
+    allow_origin_regex=r"https://.*\.trycloudflare\.com|https://.*\.loca\.lt",
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE"],
     allow_headers=["*"],
@@ -22,6 +23,7 @@ app.add_middleware(
 # Include Routers
 app.include_router(dashboard.router, prefix="/api", tags=["dashboard"])
 app.include_router(payment.router, prefix="/api/payment", tags=["payment"])
+app.include_router(admin.router, prefix="/api/admin", tags=["admin"])
 app.include_router(webhook.router, prefix="/api/stripe", tags=["webhook"])
 
 @app.get("/")
@@ -30,6 +32,8 @@ def read_root():
 
 if __name__ == "__main__":
     import uvicorn
+    from app.core.config import get_settings
+    settings = get_settings()
     uvicorn.run(
         "app.main:app",
         host=settings.API_HOST,
