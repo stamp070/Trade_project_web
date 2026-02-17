@@ -120,7 +120,7 @@ export default function Dashboard() {
                             <p className="text-xs text-slate-500 mb-1">Win Rate</p>
                             <div className="flex items-baseline justify-center gap-1">
                                 <span className="text-3xl font-bold text-slate-900">{dashboardData?.win_rate}</span>
-                                <span cl assName="text-sm font-bold text-slate-400">%</span>
+                                <span className="text-sm font-bold text-slate-400">%</span>
                             </div>
                         </div>
                     </div>

@@ -35,7 +35,7 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
             fetchData()
         }
     }, [session, isAuthLoading])
-
+    console.log(session?.access_token)
     return (
         <DashboardContext.Provider value={{ dashboardData, isLoading, fetchData }}>
             {children}

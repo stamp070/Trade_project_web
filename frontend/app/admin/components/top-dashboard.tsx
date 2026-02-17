@@ -2,8 +2,8 @@
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card"
 import { SquareUser, CircleDollarSign, ChartCandlestick } from "lucide-react"
 import { useEffect, useState } from "react"
-import { get_admin_top_dashboard } from "@/services/admin-dashboard"
-import { total } from "@/types/admin-dashboard"
+import { get_admin_top_dashboard } from "@/services/admin"
+import { total } from "@/types/admin"
 import { useAuth } from "@/components/provider/auth-provider"
 import { Skeleton } from "@/components/ui/skeleton"
 

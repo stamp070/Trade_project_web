@@ -1,7 +1,6 @@
 // frontend/utils/supabase/middleware.ts
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
-import { useAuth } from '@/components/provider/auth-provider'
 
 export async function updateSession(request: NextRequest) {
     let supabaseResponse = NextResponse.next({

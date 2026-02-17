@@ -6,8 +6,10 @@ export interface mt5_id {
     mt5_id: string
 }
 export interface User {
+    user_id: string
     email: string
     role: string
+    account_status: string
     updated_at: string
     mt5_accounts: mt5_id[]
     invoice: invoice[]

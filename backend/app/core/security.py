@@ -26,3 +26,27 @@ def get_current_user(credential: HTTPAuthorizationCredentials = Depends(http_bea
             detail=str(e),
             headers={"WWW-Authenticate": "Bearer"}
         )
+
+def get_current_admin(current_user = Depends(get_current_user)):
+    user_id = current_user.id
+    
+    try:
+        supabase = get_supabase_client()
+        
+        response = supabase.table("profile").select("role").eq("user_id",user_id).single().execute()
+        user_data = response.data
+        
+        if user_data["role"] != "admin":
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN, 
+                detail="Not authorized to access this admin dashboard",
+                headers={"WWW-Authenticate": "Bearer"}
+            )
+            
+        return {"user_id": user_id, "role": user_data.get("role"), "email": user_data.get("email")}
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, 
+            detail=str(e),
+            headers={"WWW-Authenticate": "Bearer"}
+        )

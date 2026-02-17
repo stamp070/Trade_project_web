@@ -1,13 +1,7 @@
 "use client"
 import { useParams } from "next/navigation"
-import {
-    Activity,
-    Wifi,
-    PauseCircle,
-    Trash2
-} from "lucide-react"
 import { DeleteBotButton } from "../components/delete-bot-button"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import {
     Table,
@@ -164,12 +158,12 @@ export default function AccountDetailPage() {
                                 <Card className="flex flex-col items-center justify-center p-4 shadow-sm border-none bg-white">
                                     <div className="text-lg font-semibold mb-1 text-slate-700">Due Date</div>
                                     <div className="text-xs text-slate-400">Remainings</div>
-                                    <div className="text-4xl font-bold text-slate-900">{dashboardData?.due_date}</div>
+                                    <div className="text-4xl font-bold text-slate-900">{dashboardData?.due_date || 0}</div>
                                     <div className="text-xs text-slate-400 mt-1">days</div>
                                 </Card>
                                 <Card className="flex flex-col items-center justify-center p-4 shadow-sm border-none bg-white">
                                     <div className="text-lg font-semibold mb-1 text-slate-700">Current Active Bots</div>
-                                    <div className="text-4xl font-bold text-slate-900">{dashboardData?.bots.filter((bot) => bot.connection === "Connected").length}</div>
+                                    <div className="text-4xl font-bold text-slate-900">{dashboardData?.bots.filter((bot) => bot.connection === "Connected").length || 0}</div>
                                     <div className="text-xs text-slate-400 mt-1">bots</div>
                                 </Card>
                             </div>
@@ -191,21 +185,21 @@ export default function AccountDetailPage() {
                         <div className="text-center">
                             <p className="text-xs text-slate-500 mb-1">Total Trades</p>
                             <div className="flex items-baseline justify-center gap-1">
-                                <span className="text-3xl font-bold text-slate-900">{dashboardData?.total_orders}</span>
+                                <span className="text-3xl font-bold text-slate-900">{dashboardData?.total_orders || 0}</span>
                                 <span className="text-xs text-slate-400">Orders</span>
                             </div>
                         </div>
                         <div className="text-center">
                             <p className="text-xs text-slate-500 mb-1">Total Wins</p>
                             <div className="flex items-baseline justify-center gap-1">
-                                <span className="text-3xl font-bold text-slate-900">{dashboardData?.total_wins}</span>
+                                <span className="text-3xl font-bold text-slate-900">{dashboardData?.total_wins || 0}</span>
                                 <span className="text-xs text-slate-400">Orders</span>
                             </div>
                         </div>
                         <div className="text-center">
                             <p className="text-xs text-slate-500 mb-1">Win Rate</p>
                             <div className="flex items-baseline justify-center gap-1">
-                                <span className="text-3xl font-bold text-slate-900">{dashboardData?.win_rate}</span>
+                                <span className="text-3xl font-bold text-slate-900">{dashboardData?.win_rate || 0}</span>
                                 <span className="text-sm font-bold text-slate-400">%</span>
                             </div>
                         </div>
@@ -217,7 +211,7 @@ export default function AccountDetailPage() {
             <div className="bg-white rounded-xl shadow-sm border p-6">
                 <h2 className="text-lg font-bold text-slate-900 mb-6">Trading Bots Performance</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {dashboardData?.bots.map((bot, index) => (
+                    {dashboardData?.bots.length > 0 ? dashboardData?.bots.map((bot, index) => (
                         <div key={bot.bot_id} className="border rounded-xl p-4 hover:shadow-md transition-shadow">
                             <div className="flex justify-between items-start mb-4">
                                 <div>
@@ -268,7 +262,12 @@ export default function AccountDetailPage() {
                                 </div>
                             </div>
                         </div>
-                    ))}
+                    ))
+                        :
+                        <div className="w-full col-start-2">
+                            <p className="text-center text-slate-500">No Bots Available.</p>
+                        </div>
+                    }
                 </div>
             </div>
 
@@ -289,7 +288,7 @@ export default function AccountDetailPage() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {dashboardData?.recent_trades.map((trade, i) => (
+                            {dashboardData?.recent_trades.length > 0 ? dashboardData?.recent_trades.map((trade, i) => (
                                 <TableRow key={i} className="hover:bg-slate-50">
                                     <TableCell className="text-slate-600 font-medium py-4">{trade.time}</TableCell>
                                     <TableCell className="font-bold text-slate-900 py-4">{trade.symbol}</TableCell>
@@ -305,7 +304,13 @@ export default function AccountDetailPage() {
                                     <TableCell className="py-4">
                                     </TableCell>
                                 </TableRow>
-                            ))}
+                            ))
+                                : <TableRow>
+                                    <TableCell colSpan={5} className="text-center py-4 text-slate-500">
+                                        No recent trades
+                                    </TableCell>
+                                </TableRow>
+                            }
                         </TableBody>
                     </Table>
                 </CardContent>

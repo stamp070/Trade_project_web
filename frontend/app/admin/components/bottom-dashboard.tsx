@@ -1,7 +1,7 @@
 "use client"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
-import { Pencil, Trash, Eye } from "lucide-react"
+import { Pencil, Trash, Eye, BanIcon, CircleCheck } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { useState } from "react"
@@ -15,10 +15,12 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { useEffect } from "react"
-import { get_admin_bottom_dashboard } from "@/services/admin-dashboard"
-import { User } from "@/types/admin-dashboard"
+import { get_admin_bottom_dashboard } from "@/services/admin"
+import { User } from "@/types/admin"
 import { useAuth } from "@/components/provider/auth-provider"
 import { Skeleton } from "@/components/ui/skeleton"
+import { BannedModal } from "./banned-modal"
+import { UnbannedModal } from "./unbanned-modal"
 
 
 export default function BottomDashboard() {
@@ -47,17 +49,18 @@ export default function BottomDashboard() {
         }
     }
 
-    useEffect(() => {
-        const fetchAdminDashboard = async () => {
-            try {
-                const data = await get_admin_bottom_dashboard(session?.access_token || "")
-                setAdminDashboard(data?.users || [])
-            } catch (error) {
-                console.error("Error fetching admin dashboard data:", error)
-            } finally {
-                setIsloading(false)
-            }
+    const fetchAdminDashboard = async () => {
+        try {
+            const data = await get_admin_bottom_dashboard(session?.access_token || "")
+            setAdminDashboard(data?.users || [])
+        } catch (error) {
+            console.error("Error fetching admin dashboard data:", error)
+        } finally {
+            setIsloading(false)
         }
+    }
+
+    useEffect(() => {
         fetchAdminDashboard()
     }, [session])
 
@@ -74,12 +77,10 @@ export default function BottomDashboard() {
                     <div className="flex flex-col w-full max-w-full gap-5 p-4">
                         {Array.from({ length: 5 }).map((_, index) => (
                             <div className="flex gap-4" key={index}>
-                                <Skeleton className="h-6 w-full" />
-                                <Skeleton className="h-6 w-full" />
-                                <Skeleton className="h-6 w-full" />
-                                <Skeleton className="h-6 w-full" />
-                                <Skeleton className="h-6 w-full" />
-                                <Skeleton className="h-6 w-full" />
+                                <Skeleton className="h-6 w-2/4" />
+                                <Skeleton className="h-6 w-1/4" />
+                                <Skeleton className="h-6 w-1/4" />
+                                <Skeleton className="h-6 w-1/4" />
                             </div>
                         ))}
                     </div>
@@ -174,9 +175,18 @@ export default function BottomDashboard() {
                                                     <Button variant="outline" size="icon" className="h-8 w-8">
                                                         <Eye className="h-4 w-4" />
                                                     </Button>
-                                                    <Button variant="outline" size="icon" className="h-8 w-8 text-red-500 hover:text-red-700">
-                                                        <Trash className="h-4 w-4" />
-                                                    </Button>
+                                                    {user.account_status !== "banned" ?
+                                                        <BannedModal onBanned={fetchAdminDashboard} user_id={user.user_id}>
+                                                            <Button variant="outline" size="icon" className="h-8 w-8 text-red-500 hover:text-red-700">
+                                                                <BanIcon className="h-4 w-4 text-red-600" />
+                                                            </Button>
+                                                        </BannedModal> :
+                                                        <UnbannedModal onUnbanned={fetchAdminDashboard} user_id={user.user_id}>
+                                                            <Button variant="outline" size="icon" className="h-8 w-8 text-green-500 hover:text-green-700">
+                                                                <CircleCheck className="h-4 w-4 text-green-600" />
+                                                            </Button>
+                                                        </UnbannedModal>
+                                                    }
                                                 </div>
                                             </TableCell>
                                         </TableRow>
