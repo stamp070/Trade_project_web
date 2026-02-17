@@ -10,20 +10,21 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/components/provider/auth-provider";
 import { createToken, createAccount } from "@/services/mt5";
 import { useRouter } from 'next/navigation'
+import { showToast } from "@/lib/toast-style";
 
 interface Mt5ModalProps {
     isOpen: boolean;
     onOpenChange: (open: boolean) => void;
+    onSuccess: () => void;
 }
 const formSchema = z.object({
     account_name: z.string().min(3, "Name must be at least 3 characters long"),
     mt5_name: z.string().length(10, "MT5 ID must be 10 digits").regex(/^\d+$/, "Must be only digits"),
 })
-export default function Mt5Modal({ isOpen, onOpenChange }: Mt5ModalProps) {
+export default function Mt5Modal({ isOpen, onOpenChange, onSuccess }: Mt5ModalProps) {
     const { session, isLoading: isAuthLoading } = useAuth()
     const [token, setToken] = useState("")
     const router = useRouter()
-    const [onSuccess, setOnSuccess] = useState(false)
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -46,10 +47,13 @@ export default function Mt5Modal({ isOpen, onOpenChange }: Mt5ModalProps) {
             if (res?.status == "success") {
                 onOpenChange(false)
                 form.reset()
-                router.refresh()
+                showToast.success("MT5 account created successfully")
+                if (onSuccess) {
+                    onSuccess()
+                }
             }
         } catch (error) {
-            console.error("Error generating token:", error)
+            showToast.error("Failed to create MT5 account")
         }
     }
 

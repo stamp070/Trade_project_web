@@ -2,45 +2,18 @@
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Plus, User, Wallet } from 'lucide-react'
+import { Plus } from 'lucide-react'
 import Link from "next/link"
 import { usePathname } from 'next/navigation'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import Mt5Modal from './mt5-modal'
-import { useAuth } from "@/components/provider/auth-provider"
-import { getDashboardOverview } from "@/services/dashboard"
-import { DashboardData } from "@/types/dashboard"
 import { Skeleton } from "@/components/ui/skeleton"
+import { useDashboard } from '../context/dashboard-context'
 
 export default function Sidebar() {
     const pathname = usePathname()
-    const { session, isLoading: isAuthLoading } = useAuth()
+    const { dashboardData, isLoading, fetchData } = useDashboard()
     const [mt5modal, setMt5modal] = useState(false)
-    const [data, setData] = useState<DashboardData | null>(null)
-    const [isLoading, setIsLoading] = useState(true)
-
-    useEffect(() => {
-        const fetchData = async () => {
-            if (isAuthLoading) return
-
-            try {
-                if (!session?.access_token) {
-                    setIsLoading(false)
-                    return
-                }
-                const dashboardData = await getDashboardOverview(session.access_token)
-                if (dashboardData) {
-                    setData(dashboardData)
-                }
-            } catch (error) {
-                console.error("Error fetching sidebar data:", error)
-            } finally {
-                setIsLoading(false)
-            }
-        }
-        fetchData()
-    }, [session, isAuthLoading])
-    console.log(session?.access_token)
 
     if (isLoading) {
         return (
@@ -79,7 +52,7 @@ export default function Sidebar() {
                 <span className="text-base font-normal">MT 5 Account</span>
                 <Plus className="h-5 w-5 text-gray-500" />
             </Button>
-            <Mt5Modal isOpen={mt5modal} onOpenChange={setMt5modal} />
+            <Mt5Modal isOpen={mt5modal} onOpenChange={setMt5modal} onSuccess={() => fetchData()} />
 
             <Card className="bg-blue-50/50 border-none shadow-none">
                 <CardHeader className="pb-2">
@@ -88,12 +61,12 @@ export default function Sidebar() {
                 <CardContent className="space-y-4">
                     <div className="flex justify-between items-center">
                         <span className="text-sm text-slate-500">Total Balance</span>
-                        <span className="font-bold text-slate-900">฿{data?.balance?.toLocaleString() ?? '0'}</span>
+                        <span className="font-bold text-slate-900">฿{dashboardData?.balance?.toLocaleString() ?? '0'}</span>
                     </div>
                     <div className="flex justify-between items-center">
                         <span className="text-sm text-slate-500">Total P&L</span>
-                        <span className={`font-bold ${data?.total_pnl && data.total_pnl >= 0 ? "text-emerald-600" : "text-red-500"}`}>
-                            {data?.total_pnl && data.total_pnl > 0 ? "+" : ""}฿{data?.total_pnl?.toLocaleString() ?? '0'}
+                        <span className={`font-bold ${dashboardData?.total_pnl && dashboardData.total_pnl >= 0 ? "text-emerald-600" : "text-red-500"}`}>
+                            {dashboardData?.total_pnl && dashboardData.total_pnl > 0 ? "+" : ""}฿{dashboardData?.total_pnl?.toLocaleString() ?? '0'}
                         </span>
                     </div>
                 </CardContent>
@@ -107,7 +80,7 @@ export default function Sidebar() {
                             <span className={`text-sm font-semibold ${pathname === '/dashboard' ? 'text-slate-900' : 'text-slate-600'}`}>Overall</span>
                         </div>
                     </Link>
-                    {data?.accounts.map((account) => {
+                    {dashboardData?.accounts.map((account) => {
                         const isActive = pathname === `/dashboard/${account.mt5_id}`
                         return (
                             <Link key={account.mt5_id} href={`/dashboard/${account.mt5_id}`}>
@@ -123,7 +96,7 @@ export default function Sidebar() {
                             </Link>
                         )
                     })}
-                    {(!data?.accounts || data.accounts.length === 0) && (
+                    {(!dashboardData?.accounts || dashboardData.accounts.length === 0) && (
                         <div className="p-4 text-center text-sm text-slate-400 border border-dashed rounded-lg">
                             No accounts connected
                         </div>

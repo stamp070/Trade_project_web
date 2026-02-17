@@ -1,40 +1,21 @@
 "use client"
-import { EquityChart } from "@/components/chart/equity-chart"
-import { useState, useEffect } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Table, TableHead, TableHeader, TableRow, TableBody, TableCell } from "@/components/ui/table"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Skeleton } from "@/components/ui/skeleton"
-import { Trash2, XCircle } from "lucide-react"
-import { CheckCircle2 } from "lucide-react"
-import { getDashboardOverview } from "@/services/dashboard"
-import { DashboardData } from "@/types/dashboard"
-import PnlChart from "@/components/chart/pnl-chart"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { EquityChart } from '@/components/chart/equity-chart'
+import PnlChart from '@/components/chart/pnl-chart'
 import { useAuth } from "@/components/provider/auth-provider"
 import { DeleteAccountButton } from "./delete-account-button"
+import { useDashboard } from "../context/dashboard-context"
+import { Skeleton } from "@/components/ui/skeleton"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Trash2, CheckCircle2, XCircle } from "lucide-react"
+
 
 export default function Dashboard() {
     const { session, isLoading: isAuthLoading } = useAuth()
-    const [dashboardData, setDashboardData] = useState<DashboardData | null>(null)
-    const [isLoading, setIsLoading] = useState(true)
-
-    const fetchData = async () => {
-        if (!session?.access_token) return
-        try {
-            const data = await getDashboardOverview(session.access_token)
-            setDashboardData(data)
-        } catch (error) {
-            console.error("Error fetching dashboard overview:", error)
-        } finally {
-            setIsLoading(false)
-        }
-    }
-
-    useEffect(() => {
-        fetchData()
-    }, [session])
-
+    const { dashboardData, isLoading, fetchData } = useDashboard()
 
     if (isLoading) {
         return (
@@ -63,7 +44,7 @@ export default function Dashboard() {
                             ))}
                         </div>
                     </CardContent>
-                </Card>
+                </Card >
 
                 <Card className="shadow-sm border-none bg-white">
                     <CardHeader>
@@ -79,13 +60,18 @@ export default function Dashboard() {
                         </div>
                     </CardContent>
                 </Card>
-            </div>
+            </div >
         )
     }
 
     return (
-        <div className="space-y-6 p-6 min-h-screen bg-slate-50/50">
-            <Card className="border-none shadow-sm bg-white">
+        <div className="space-y-6">
+            <div className="flex flex-col gap-2">
+                <h1 className="text-3xl font-bold tracking-tight text-slate-900">Dashboard Overview</h1>
+                <p className="text-slate-500">Welcome back, here's what's happening with your portfolio today.</p>
+            </div>
+
+            <Card className="border-none shadow-sm bg-white overflow-hidden">
                 <CardContent className="p-6">
                     <div className="flex flex-col xl:flex-row gap-6">
                         <div className="flex-1 min-w-0 ">
@@ -94,23 +80,21 @@ export default function Dashboard() {
                         <div className="flex-1 min-w-0 xl:max-w-md ">
                             <div className="grid grid-cols-2 gap-4 mb-6">
                                 <Card className="flex flex-col items-center justify-center p-4 shadow-sm border-none bg-white">
-                                    <div className="text-lg font-semibold mb-1 text-slate-700">Due Date</div>
-                                    <div className="text-xs text-slate-400 mb-2">Remainings</div>
-                                    <div className="text-4xl font-bold text-slate-900">14</div>
-                                    <div className="text-xs text-slate-400 mt-1">days</div>
+                                    <div className="text-lg font-semibold mb-1 text-center text-slate-700">Account Balance</div>
+                                    <div className="text-4xl font-bold text-slate-900 mt-4">฿{Math.floor(dashboardData?.balance || 0).toLocaleString()}</div>
+                                    <div className="text-xs text-slate-400 mt-1">Total Assets</div>
                                 </Card>
                                 <Card className="flex flex-col items-center justify-center p-4 shadow-sm border-none bg-white">
                                     <div className="text-lg font-semibold mb-1 text-center text-slate-700">Current Active Bots</div>
                                     <div className="text-4xl font-bold text-slate-900 mt-4">{dashboardData?.accounts.length}</div>
-                                    <div className="text-xs text-slate-400 mt-1">Accounts</div>
+                                    <div className="text-xs text-slate-400 mt-1">Bots</div>
                                 </Card>
                             </div>
                             <PnlChart data={dashboardData?.pnl_circle || []} />
                         </div>
                     </div>
 
-                    {/* Bottom Stats Row */}
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-8 border-t pt-8">
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 mt-8 pt-8 border-t border-slate-100">
                         <div className="text-center">
                             <p className="text-xs text-slate-500 mb-1">Balance</p>
                             <div className="flex items-baseline justify-center gap-2">
@@ -119,7 +103,7 @@ export default function Dashboard() {
                             </div>
                         </div>
                         <div className="text-center">
-                            <p className="text-xs text-slate-500 mb-1">Total Trades</p>
+                            <p className="text-xs text-slate-500 mb-1">Total Orders</p>
                             <div className="flex items-baseline justify-center gap-1">
                                 <span className="text-3xl font-bold text-slate-900">{dashboardData?.total_orders}</span>
                                 <span className="text-xs text-slate-400">Orders</span>
@@ -136,18 +120,17 @@ export default function Dashboard() {
                             <p className="text-xs text-slate-500 mb-1">Win Rate</p>
                             <div className="flex items-baseline justify-center gap-1">
                                 <span className="text-3xl font-bold text-slate-900">{dashboardData?.win_rate}</span>
-                                <span className="text-sm font-bold text-slate-400">%</span>
+                                <span cl assName="text-sm font-bold text-slate-400">%</span>
                             </div>
                         </div>
                     </div>
-
                 </CardContent>
             </Card>
-            <div>
-                <Card className="shadow-sm border-none bg-white">
+
+            <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
+                <Card className="border-none shadow-sm bg-white">
                     <CardHeader>
-                        <CardTitle>MT5 Accounts</CardTitle>
-                        <CardDescription>Manage your connected trading accounts</CardDescription>
+                        <CardTitle className="text-lg font-semibold text-slate-800">Your Accounts</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <div className="overflow-x-auto">
@@ -197,13 +180,19 @@ export default function Dashboard() {
                                             </TableCell>
                                         </TableRow>
                                     ))}
+                                    {(!dashboardData?.accounts || dashboardData.accounts.length === 0) && (
+                                        <tr>
+                                            <td colSpan={4} className="px-6 py-8 text-center text-slate-400">
+                                                No accounts found. Create one to get started.
+                                            </td>
+                                        </tr>
+                                    )}
                                 </TableBody>
                             </Table>
                         </div>
                     </CardContent>
                 </Card>
             </div>
-        </div>
-
+        </div >
     )
 }
