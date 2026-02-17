@@ -22,8 +22,10 @@ import { EquityChart } from "@/components/chart/equity-chart"
 import PnlChart from "@/components/chart/pnl-chart"
 import { Switch } from "@/components/ui/switch"
 import { useState, useEffect } from "react"
-import { getDashboardAccounts, updateBotStatus } from "@/services/dashboard"
-import { DashboardAccountsData, Bot } from "@/types/dashboard"
+import { getDashboardAccounts } from "@/services/mt5"
+import { updateBotStatus } from "@/services/bot"
+import { DashboardAccountsData } from "@/types/dashboard"
+import { Bot } from "@/types/bot"
 import { useAuth } from "@/components/provider/auth-provider"
 
 

@@ -13,6 +13,7 @@ import { BotOption } from "@/types/bot"
 import { createBot } from "@/services/bot"
 import { useAuth } from "@/components/provider/auth-provider"
 import { BotCreate } from "@/types/bot"
+import { showToast } from "@/lib/toast-style"
 
 interface BotsCardProps {
     name: string
@@ -94,11 +95,19 @@ export default function BotsCard({
                             "mt5_id": accountId,
                             "currency": name
                         }
-                        const fetch = async () => {
+                        const addBot = async () => {
                             const data = await createBot(token || "", json)
-                            console.log(data)
+                            if (data.status === "success") {
+                                showToast.success('Bot added successfully!')
+
+                            } else if (data.status === "bot already exist") {
+                                showToast.warning('Bot already exist')
+                            }
+                            else {
+                                showToast.error("Failed to add bot")
+                            }
                         }
-                        fetch()
+                        addBot()
 
                     }}
                 />

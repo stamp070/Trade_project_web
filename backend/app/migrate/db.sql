@@ -20,11 +20,14 @@ create table public.transaction (
   profit_loss numeric(20, 2) null,
   open_at timestamp with time zone null,
   close_at timestamp with time zone null,
+  user_id uuid not null,
+  mt5_id uuid null,
   constraint transaction_pkey primary key (transaction_id),
-  constraint transaction_bot_id_fkey foreign KEY (bot_id) references bots (bot_id),
+  constraint transaction_bot_id_fkey foreign KEY (bot_id) references bots (bot_id) on delete set null,
+  constraint transaction_mt5_id_fkey foreign KEY (mt5_id) references mt5_accounts (mt5_id) on delete set null,
+  constraint transaction_user_id_fkey foreign KEY (user_id) references profile (user_id) on delete CASCADE,
   constraint transaction_version_id_fkey foreign KEY (version_id) references bots_version (version_id)
 ) TABLESPACE pg_default;
-
 
 
 create table public.ppo_model (

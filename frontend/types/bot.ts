@@ -1,3 +1,12 @@
+export interface Bot {
+    bot_id: string
+    name: string
+    version: string
+    pnl: number
+    today: number
+    connection: string
+    trades: number
+}
 
 export interface BotOption {
     id: string

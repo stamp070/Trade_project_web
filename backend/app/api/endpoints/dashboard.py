@@ -3,15 +3,17 @@ from app.core.security import get_current_user
 from app.services.dashboard.dashboard_service import get_overview_data, get_account_detail
 from app.services.dashboard.mt5 import create_token_mt5,create_account_mt5,delete_account_mt5
 from app.schema.mt5 import mt5_data,mt5_account
-from app.services.dashboard.bot import create_bot_service,get_bot_service,update_bot_status
+from app.services.dashboard.bot import create_bot_service,get_bot_service,update_bot_status,delete_bot_service
 from app.schema.bot import BotCreate
 router = APIRouter()
 
+# Dashboard Overview (all account)
 @router.get("/overview")
 def read_dashboard_overview(current_user = Depends(get_current_user)):
     return get_overview_data(current_user.id)
 
-@router.get("/account/{account_id}")
+# MT5 (display on dashboard)
+@router.get("/mt5/account/{account_id}")
 def read_account_detail(account_id: str, current_user = Depends(get_current_user)):
     data = get_account_detail(current_user.id, account_id)
     if not data:
@@ -39,7 +41,8 @@ def delete_account(mt5_id:str,current_user=Depends(get_current_user)):
     if not data:
         raise HTTPException(status_code=404, detail="Account not found")
     return data
-    
+
+# Bots (display on dashboard per account)
 @router.post("/bots/{bot_id}/{connection}")
 def update_bot(bot_id: str, connection: str, current_user = Depends(get_current_user)):
     data = update_bot_status(bot_id, connection)
@@ -47,17 +50,23 @@ def update_bot(bot_id: str, connection: str, current_user = Depends(get_current_
         raise HTTPException(status_code=404, detail="Bot status not found")
     return data
 
-@router.get("/bots/getbot")
+@router.get("/bots/get-bot")
 def get_bot(current_user = Depends(get_current_user)):
     data = get_bot_service(current_user.id)
     if not data:
         raise HTTPException(status_code=404, detail="Bot not found")
     return data
 
-@router.post("/bots/createbot")
+@router.post("/bots/create-bot")
 def create_bot(bot_data: BotCreate, current_user = Depends(get_current_user)):
-    print(bot_data)
     data = create_bot_service(bot_data, current_user.id)
     if not data:
         raise HTTPException(status_code=500, detail="Failed to create bot")
+    return data
+
+@router.delete("/bots/delete-bot/{bot_id}")
+def delete_bot(bot_id:str,current_user=Depends(get_current_user)):
+    data = delete_bot_service(bot_id)
+    if not data:
+        raise HTTPException(status_code=404, detail="Bot not found")
     return data

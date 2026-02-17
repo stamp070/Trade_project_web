@@ -1,3 +1,4 @@
+import { Bot } from "@/types/bot"
 // กราฟเส้น (Pnl Overview)
 export interface PnlGraph {
     day: string
@@ -43,15 +44,7 @@ export interface DashboardData {
     pnl_circle: PnlCircle[]
 }
 
-export interface Bot {
-    bot_id: string
-    name: string
-    version: string
-    pnl: number
-    today: number
-    connection: string
-    trades: number
-}
+
 
 export interface RecentTrade {
     time: string

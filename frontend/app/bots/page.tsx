@@ -4,9 +4,7 @@ import { useAuth } from "@/components/provider/auth-provider"
 import { useEffect, useState } from "react"
 import { getBot } from "@/services/bot"
 import { BotData } from "@/types/bot"
-import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
-import { getDashboardAccounts } from "@/services/dashboard"
 
 
 export default function Bots() {

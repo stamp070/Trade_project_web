@@ -5,9 +5,8 @@ def create_bot_service(data: BotCreate, user_id: str):
     supabase = get_supabase_client()
 
     test = supabase.table("bots").select("").eq("currency",data.currency).eq("mt5_id",data.mt5_id).execute()
-    print(data.mt5_id)
     if(test.data):
-        return {"status":"Bots already exist"}
+        return {"status":"bot already exist"}
 
     try:
         response = supabase.table("bots").insert({
@@ -43,3 +42,12 @@ def update_bot_status(bot_id: str, connection: str):
     response = supabase.table('bots').update({'connection': connection }).eq('bot_id', bot_id).execute()
     
     return response.data
+
+def delete_bot_service(bot_id:str):
+    supabase = get_supabase_client()
+    try:
+        supabase.table('bots').delete().eq('bot_id', bot_id).execute()
+        return {"status":"success"}
+    except Exception as e:
+        print(f"Error deleting bot: {e}")
+        return {"status":"error"}

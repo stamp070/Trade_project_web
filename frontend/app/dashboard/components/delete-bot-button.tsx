@@ -14,6 +14,8 @@ import {
 import { Button } from "@/components/ui/button"
 import { Trash2 } from "lucide-react"
 import { useState } from "react"
+import { deleteBot } from "@/services/bot"
+import { showToast } from "@/lib/toast-style"
 
 interface DeleteBotButtonProps {
     token: string
@@ -26,31 +28,25 @@ interface DeleteBotButtonProps {
 export function DeleteBotButton({ token, botId, botName, onSuccess }: DeleteBotButtonProps) {
     const [isDeleting, setIsDeleting] = useState(false)
 
-    // const handleDelete = async () => {
-    //     setIsDeleting(true)
-    //     try {
-    //         const result = await deleteBot(token, botId)
-    //         if (result && result.status === "success") {
-    //             toast.success("Bot deleted", {
-    //                 description: `Bot ${botName} has been successfully deleted.`,
-    //             })
-    //             if (onSuccess) {
-    //                 onSuccess()
-    //             }
-    //         } else {
-    //             toast.error("Error", {
-    //                 description: "Failed to delete bot. Please try again.",
-    //             })
-    //         }
-    //     } catch (error) {
-    //         console.error("Error deleting bot:", error)
-    //         toast.error("Error", {
-    //             description: "An unexpected error occurred.",
-    //         })
-    //     } finally {
-    //         setIsDeleting(false)
-    //     }
-    // }
+    const handleDelete = async () => {
+        setIsDeleting(true)
+        try {
+            const result = await deleteBot(token, botId)
+            if (result && result.status === "success") {
+                showToast.success('Bot deleted successfully!')
+                if (onSuccess) {
+                    onSuccess()
+                }
+            } else {
+                showToast.error("Failed to delete bot")
+            }
+        } catch (error) {
+            console.error("Error deleting bot:", error)
+            showToast.error("Failed to delete bot")
+        } finally {
+            setIsDeleting(false)
+        }
+    }
 
     return (
         <AlertDialog>

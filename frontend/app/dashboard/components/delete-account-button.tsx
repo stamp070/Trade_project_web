@@ -16,7 +16,7 @@ import { Trash2 } from "lucide-react"
 import { deleteAccount } from "@/services/mt5"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
-import { toast } from "sonner"
+import { showToast } from "@/lib/toast-style"
 
 interface DeleteAccountButtonProps {
     token: string
@@ -35,24 +35,17 @@ export function DeleteAccountButton({ token, accountId, accountName, onSuccess }
         try {
             const result = await deleteAccount(token, accountId)
             if (result && result.status === "success") {
-                toast.success("Account deleted", {
-                    description: `Account ${accountName} has been successfully deleted.`,
-                })
+                showToast.success('Account deleted successfully!')
                 if (onSuccess) {
                     onSuccess()
                 } else {
                     router.push("/dashboard")
                 }
             } else {
-                toast.error("Error", {
-                    description: "Failed to delete account. Please try again.",
-                })
+                showToast.error("Failed to delete account")
             }
         } catch (error) {
-            console.error("Error deleting account:", error)
-            toast.error("Error", {
-                description: "An unexpected error occurred.",
-            })
+            showToast.error("Failed to delete account")
         } finally {
             setIsDeleting(false)
         }
