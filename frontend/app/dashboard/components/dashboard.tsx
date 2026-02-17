@@ -11,30 +11,31 @@ import { CheckCircle2 } from "lucide-react"
 import { getDashboardOverview } from "@/services/dashboard"
 import { DashboardData } from "@/types/dashboard"
 import PnlChart from "@/components/chart/pnl-chart"
-
-
 import { useAuth } from "@/components/provider/auth-provider"
+import { DeleteAccountButton } from "./delete-account-button"
 
 export default function Dashboard() {
     const { session, isLoading: isAuthLoading } = useAuth()
     const [dashboardData, setDashboardData] = useState<DashboardData | null>(null)
     const [isLoading, setIsLoading] = useState(true)
 
-    useEffect(() => {
-        const fetchDashboardOverview = async () => {
-            if (isAuthLoading) return
-            try {
-                const data = await getDashboardOverview(session?.access_token || "")
-                setDashboardData(data)
-            } catch (error) {
-                console.error("Error fetching dashboard overview:", error)
-            } finally {
-                setIsLoading(false)
-            }
+    const fetchData = async () => {
+        if (!session?.access_token) return
+        try {
+            const data = await getDashboardOverview(session.access_token)
+            setDashboardData(data)
+        } catch (error) {
+            console.error("Error fetching dashboard overview:", error)
+        } finally {
+            setIsLoading(false)
         }
-        fetchDashboardOverview()
-    }, [session, isAuthLoading])
-    console.log("dashboardData", dashboardData)
+    }
+
+    useEffect(() => {
+        fetchData()
+    }, [session])
+
+
     if (isLoading) {
         return (
             <div className="space-y-6 p-6 min-h-screen">
@@ -183,9 +184,16 @@ export default function Dashboard() {
                                             </TableCell>
                                             <TableCell className="text-right font-bold text-slate-900">฿{account.balance.toLocaleString()}</TableCell>
                                             <TableCell className="text-right">
-                                                <Button variant="ghost" size="icon" className="hover:text-red-600 hover:bg-red-50">
-                                                    <Trash2 className="w-4 h-4 text-red-600" />
-                                                </Button>
+                                                <DeleteAccountButton
+                                                    token={session?.access_token || ""}
+                                                    accountId={account.mt5_id}
+                                                    accountName={account.account_name}
+                                                    onSuccess={fetchData}
+                                                >
+                                                    <Button variant="ghost" size="icon" className="hover:text-red-600 cursor-pointer">
+                                                        <Trash2 className="w-4 h-4 text-red-600" />
+                                                    </Button>
+                                                </DeleteAccountButton>
                                             </TableCell>
                                         </TableRow>
                                     ))}

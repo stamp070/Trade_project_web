@@ -25,6 +25,8 @@ create table public.transaction (
   constraint transaction_version_id_fkey foreign KEY (version_id) references bots_version (version_id)
 ) TABLESPACE pg_default;
 
+
+
 create table public.ppo_model (
   ppo_model_id uuid not null default extensions.uuid_generate_v4 (),
   version character varying null,

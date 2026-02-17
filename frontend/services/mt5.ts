@@ -43,3 +43,22 @@ export async function createAccount(token: string, accountMt5: mt5_account): Pro
         return null
     }
 }
+
+export async function deleteAccount(token: string, MT5_id: string): Promise<{ status: string } | null> {
+    try {
+        const res = await fetch(`${API_URL}/api/mt5/delete-account/${MT5_id}`, {
+            method: "DELETE",
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+            cache: 'no-store'
+        })
+        if (!res.ok) {
+            throw new Error(`Failed to fetch mt5 account: ${res.status}`)
+        }
+        return res.json()
+    } catch (error) {
+        console.error("Error fetching mt5 account:", error)
+        return null
+    }
+}

@@ -33,3 +33,22 @@ def create_account_mt5(data:mt5_account,user_id:str):
     except Exception as e:
         print(e)
         return {"status":"error"}
+
+def delete_account_mt5(mt5_id:str):
+    supabase = get_supabase_client()
+    mt5_res = supabase.table("mt5_accounts").select("*").eq("mt5_id",mt5_id).execute()
+    bot_res = supabase.table("bots").select("*").eq("mt5_id",mt5_id).execute()
+
+    if not mt5_res.data:
+        return {"status":"not found"}
+
+    if bot_res.data:
+        try:
+            supabase.table("bots").delete().eq("mt5_id",mt5_id).execute()
+        except Exception as e:
+            return {"status":"error delete bot"}
+    try:
+        supabase.table("mt5_accounts").delete().eq("mt5_id",mt5_id).execute()
+        return {"status":"success"}
+    except Exception as e:
+        return {"status":"error delete mt5"}

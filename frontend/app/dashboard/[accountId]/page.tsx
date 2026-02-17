@@ -4,7 +4,9 @@ import {
     Activity,
     Wifi,
     PauseCircle,
+    Trash2
 } from "lucide-react"
+import { DeleteBotButton } from "../components/delete-bot-button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import {
@@ -35,23 +37,24 @@ export default function AccountDetailPage() {
     const [isLoading, setIsLoading] = useState(true)
 
     const [isBotConnected, setIsBotConnected] = useState<Bot[] | null>()
-    useEffect(() => {
-        const fetchDashboardAccount = async () => {
-            if (isAuthLoading) return
-            const token = session?.access_token
-            try {
-                const res = await getDashboardAccounts(token || "", accountId)
-                setDashboardData(res)
-                setIsBotConnected(res?.bots)
 
-            } catch (error) {
-                console.error("Error fetching dashboard account data:", error)
-            } finally {
-                setIsLoading(false)
-            }
+    const fetchData = async () => {
+        if (!session?.access_token) return
+        const token = session.access_token
+        try {
+            const res = await getDashboardAccounts(token || "", accountId)
+            setDashboardData(res)
+            setIsBotConnected(res?.bots)
+
+        } catch (error) {
+            console.error("Error fetching dashboard account data:", error)
+        } finally {
+            setIsLoading(false)
         }
-        fetchDashboardAccount()
+    }
 
+    useEffect(() => {
+        fetchData()
     }, [session, isAuthLoading, accountId])
 
     const handleToggleBot = async (index: number, checked: boolean) => {
@@ -252,7 +255,15 @@ export default function AccountDetailPage() {
                                         onCheckedChange={(checked) => handleToggleBot(index, checked)}
                                         className=" origin-left cursor-pointer" />
                                 </div>
-                                <span className="text-xs text-slate-400">Trades: {bot.trades}</span>
+                                <div className="flex items-center gap-2">
+                                    <span className="text-xs text-slate-400">Trades: {bot.trades}</span>
+                                    <DeleteBotButton
+                                        token={session?.access_token || ""}
+                                        botId={bot.bot_id}
+                                        botName={bot.name}
+                                        onSuccess={fetchData}
+                                    />
+                                </div>
                             </div>
                         </div>
                     ))}

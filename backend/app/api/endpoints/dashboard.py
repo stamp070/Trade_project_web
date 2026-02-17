@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from app.core.security import get_current_user
 from app.services.dashboard.dashboard_service import get_overview_data, get_account_detail
-from app.services.dashboard.mt5 import create_token_mt5,create_account_mt5
+from app.services.dashboard.mt5 import create_token_mt5,create_account_mt5,delete_account_mt5
 from app.schema.mt5 import mt5_data,mt5_account
 from app.services.dashboard.bot import create_bot_service,get_bot_service,update_bot_status
 from app.schema.bot import BotCreate
@@ -29,6 +29,13 @@ def create_token(token_mt5:mt5_data, current_user = Depends(get_current_user)):
 @router.post("/mt5/create-account")
 def create_account(mt5_account:mt5_account, current_user = Depends(get_current_user)):
     data = create_account_mt5(mt5_account,current_user.id)
+    if not data:
+        raise HTTPException(status_code=404, detail="Account not found")
+    return data
+
+@router.delete("/mt5/delete-account/{mt5_id}")
+def delete_account(mt5_id:str,current_user=Depends(get_current_user)):
+    data = delete_account_mt5(mt5_id)
     if not data:
         raise HTTPException(status_code=404, detail="Account not found")
     return data

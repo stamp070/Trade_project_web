@@ -28,7 +28,6 @@ export default function Sidebar() {
                     setIsLoading(false)
                     return
                 }
-
                 const dashboardData = await getDashboardOverview(session.access_token)
                 if (dashboardData) {
                     setData(dashboardData)

@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/components/provider/auth-provider";
 import { createToken, createAccount } from "@/services/mt5";
+import { useRouter } from 'next/navigation'
 
 interface Mt5ModalProps {
     isOpen: boolean;
@@ -21,6 +22,8 @@ const formSchema = z.object({
 export default function Mt5Modal({ isOpen, onOpenChange }: Mt5ModalProps) {
     const { session, isLoading: isAuthLoading } = useAuth()
     const [token, setToken] = useState("")
+    const router = useRouter()
+    const [onSuccess, setOnSuccess] = useState(false)
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -32,6 +35,7 @@ export default function Mt5Modal({ isOpen, onOpenChange }: Mt5ModalProps) {
     const mt5Name = form.watch("mt5_name")
     const accountName = form.watch("account_name")
 
+
     async function onSubmit() {
         try {
             const res = await createAccount(session?.access_token || "", {
@@ -42,6 +46,7 @@ export default function Mt5Modal({ isOpen, onOpenChange }: Mt5ModalProps) {
             if (res?.status == "success") {
                 onOpenChange(false)
                 form.reset()
+                router.refresh()
             }
         } catch (error) {
             console.error("Error generating token:", error)

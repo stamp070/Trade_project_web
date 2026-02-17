@@ -2,6 +2,7 @@ import { Kanit } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/navbar/Navbar";
 import { AuthProvider } from "@/components/provider/auth-provider";
+import { Toaster } from "@/components/ui/sonner";
 
 const kanit = Kanit({
     weight: ["100", "200", "300", "400", "500"],
@@ -21,6 +22,7 @@ export default function RootLayout({
                     <AuthProvider>
                         <Navbar />
                         {children}
+                        <Toaster />
                     </AuthProvider>
                 </main>
             </body>
