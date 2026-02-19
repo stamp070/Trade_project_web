@@ -90,26 +90,7 @@ export default function AccountDetailPage() {
                 {/* Top Section Skeleton */}
                 <Card className="border-none shadow-sm bg-white">
                     <CardContent className="p-6">
-                        <div className="flex flex-col xl:flex-row gap-6">
-                            <div className="flex-1 min-w-0 h-[300px]">
-                                <Skeleton className="h-full w-full rounded-xl" />
-                            </div>
-                            <div className="flex-1 min-w-0 xl:max-w-md space-y-6">
-                                <div className="grid grid-cols-2 gap-4">
-                                    <Skeleton className="h-24 w-full rounded-xl" />
-                                    <Skeleton className="h-24 w-full rounded-xl" />
-                                </div>
-                                <Skeleton className="h-[200px] w-full rounded-xl" />
-                            </div>
-                        </div>
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-8 border-t pt-8">
-                            {[1, 2, 3, 4].map((i) => (
-                                <div key={i} className="flex flex-col items-center gap-2">
-                                    <Skeleton className="h-4 w-16" />
-                                    <Skeleton className="h-8 w-24" />
-                                </div>
-                            ))}
-                        </div>
+                        <Skeleton className="h-115 w-full rounded-xl" />
                     </CardContent>
                 </Card>
 

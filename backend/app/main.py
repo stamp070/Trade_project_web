@@ -1,8 +1,21 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.endpoints import dashboard, payment, webhook, admin
+from app.Ai.model_loader import load_ai_model,unload_ai_model
+from contextlib import asynccontextmanager
 
-app = FastAPI(title="Trade Project API", content_docs_url="/docs", redoc_url=None)
+from app.Ai.main_predict import main
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # 1. เปิดเซิร์ฟเวอร์ -> สั่งโหลดโมเดล
+    load_ai_model()
+    yield
+    # 2. ปิดเซิร์ฟเวอร์ -> สั่งเคลียร์โมเดล
+    unload_ai_model()
+
+
+app = FastAPI(title="Trade Project API", content_docs_url="/docs", redoc_url=None,lifespan=lifespan)
 
 # CORS Configuration
 origins = [
@@ -29,6 +42,10 @@ app.include_router(webhook.router, prefix="/api/stripe", tags=["webhook"])
 @app.get("/")
 def read_root():
     return {"message": "Welcome to Trade Project API"}
+
+@app.get("/predict")
+def predict():
+    return main()
 
 if __name__ == "__main__":
     import uvicorn

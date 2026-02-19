@@ -8,9 +8,9 @@ import { Skeleton } from "@/components/ui/skeleton"
 
 
 export default function Bots() {
-    const [isLoading, setIsLoading] = useState(true)
     const { session, isLoading: isAuthLoading } = useAuth()
     const [botOptions, setBotOptions] = useState<BotData | null>(null)
+    const [isLoading, setIsLoading] = useState(true)
 
     const availableBots = [
         { name: "EURUSD", winRate: 52, maxDd: -8.2, timeframe: "1 Hr.", lastUpdate: "22 / 12 / 2025" },
@@ -36,7 +36,17 @@ export default function Bots() {
     console.log(session?.access_token)
 
     if (isLoading) {
-        return <div className="p-12"><Skeleton className="h-[200px] w-full rounded-xl" /></div>
+        return <div className="max-w-6xl mx-auto px-6 py-12 flex flex-col gap-4">
+            <div className="flex flex-col gap-4 items-center">
+                <Skeleton className="h-10 w-1/3 rounded-xl" />
+                <Skeleton className="h-10 w-1/2 rounded-xl" />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {Array.from({ length: 3 }).map((_, index) => (
+                    <Skeleton key={index} className="h-80 max-w-md rounded-xl" />
+                ))}
+            </div>
+        </div>
     }
 
     return (

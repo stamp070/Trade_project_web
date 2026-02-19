@@ -44,7 +44,7 @@ export default function BotsCard({
 
 
     return (
-        <div className="w-3/4">
+        <div className="w-full max-w-md mx-auto">
             <Card className="flex flex-col h-full border-none shadow-sm bg-white">
                 <CardHeader className="text-center pb-2">
                     <CardTitle className="text-xl font-bold text-slate-900">{name}</CardTitle>
