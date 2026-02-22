@@ -24,7 +24,7 @@ def get_ohlcv(symbol: str, timeframe):
 
     df = pd.DataFrame(rates)
     df['time'] = pd.to_datetime(df['time'], unit='s')
-    df.drop(columns=["real_volume"], inplace=True)
+    df.drop(columns=["real_volume", "spread"], inplace=True)
     df.rename(columns={"tick_volume": "volume"}, inplace=True)
     df.set_index('time', inplace=True)
     print("### Get OHLCV Success") 

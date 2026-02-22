@@ -30,13 +30,11 @@ async def stripe_webhook(request: Request, stripe_signature: str = Header(None))
     if event['type'] == 'checkout.session.completed':
         session = event['data']['object']
         
-        # Extract data
-        # เราควรใส่ invoice_id ไว้ใน metadata ตอนสร้าง session (ต้องไปแก้ payment_service.py)
-        # หรือถ้าไม่มี ก็ต้องหาจาก logic อื่น แต่ best practice คือใส่ invoice_id ใน metadata
-        invoice_id = session.get("metadata", {}).get("invoice_id")
+        invoice_ids = session.get("metadata", {}).get("invoice_ids").split(",")
         payment_id = session.get("id")
+        print(invoice_ids)
         
-        if invoice_id:
+        if invoice_ids:
             supabase = get_supabase_client() # Use Admin client to bypass RLS if needed
             
             # Update Invoice Status
@@ -46,7 +44,7 @@ async def stripe_webhook(request: Request, stripe_signature: str = Header(None))
                 "paid_at": datetime.now().isoformat()
             }
             
-            response = supabase.table("invoice").update(data).eq("invoice_id", invoice_id).execute()
-            print(f"Updated invoice {invoice_id}: {response.data}")
+            response = supabase.table("invoice").update(data).in_("invoice_id", invoice_ids).execute()
+            print(f"Updated invoice {invoice_ids}: {response.data}")
 
     return {"status": "success"}

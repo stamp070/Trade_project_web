@@ -81,12 +81,12 @@ export default function Dashboard() {
                             <div className="grid grid-cols-2 gap-4 mb-6">
                                 <Card className="flex flex-col items-center justify-center p-4 shadow-sm border-none bg-white">
                                     <div className="text-lg font-semibold mb-1 text-center text-slate-700">Account Balance</div>
-                                    <div className="text-4xl font-bold text-slate-900 mt-4">฿{Math.floor(dashboardData?.balance || 0).toLocaleString()}</div>
+                                    <div className="text-4xl font-bold text-slate-900 mt-4">${Math.floor(dashboardData?.balance || 0).toLocaleString()}</div>
                                     <div className="text-xs text-slate-400 mt-1">Total Assets</div>
                                 </Card>
                                 <Card className="flex flex-col items-center justify-center p-4 shadow-sm border-none bg-white">
                                     <div className="text-lg font-semibold mb-1 text-center text-slate-700">Current Active Bots</div>
-                                    <div className="text-4xl font-bold text-slate-900 mt-4">{dashboardData?.accounts.length}</div>
+                                    <div className="text-4xl font-bold text-slate-900 mt-4">{dashboardData?.accounts.length || 0}</div>
                                     <div className="text-xs text-slate-400 mt-1">Bots</div>
                                 </Card>
                             </div>
@@ -98,28 +98,28 @@ export default function Dashboard() {
                         <div className="text-center">
                             <p className="text-xs text-slate-500 mb-1">Balance</p>
                             <div className="flex items-baseline justify-center gap-2">
-                                <span className="text-3xl font-bold text-slate-900">฿{Math.floor(dashboardData?.balance || 0).toLocaleString()}</span>
-                                <span className="text-sm font-medium text-emerald-500">({dashboardData?.total_pnl || 0 > 0 ? "+" : ""} ฿{dashboardData?.total_pnl || 0})</span>
+                                <span className="text-3xl font-bold text-slate-900">${Math.floor(dashboardData?.balance || 0).toLocaleString()}</span>
+                                <span className="text-sm font-medium text-emerald-500">({dashboardData?.total_pnl || 0 > 0 ? "+" : ""} ${dashboardData?.total_pnl || 0})</span>
                             </div>
                         </div>
                         <div className="text-center">
                             <p className="text-xs text-slate-500 mb-1">Total Orders</p>
                             <div className="flex items-baseline justify-center gap-1">
-                                <span className="text-3xl font-bold text-slate-900">{dashboardData?.total_orders}</span>
+                                <span className="text-3xl font-bold text-slate-900">{dashboardData?.total_orders || 0}</span>
                                 <span className="text-xs text-slate-400">Orders</span>
                             </div>
                         </div>
                         <div className="text-center">
                             <p className="text-xs text-slate-500 mb-1">Total Wins</p>
                             <div className="flex items-baseline justify-center gap-1">
-                                <span className="text-3xl font-bold text-slate-900">{dashboardData?.total_wins}</span>
+                                <span className="text-3xl font-bold text-slate-900">{dashboardData?.total_wins || 0}</span>
                                 <span className="text-xs text-slate-400">Orders</span>
                             </div>
                         </div>
                         <div className="text-center">
                             <p className="text-xs text-slate-500 mb-1">Win Rate</p>
                             <div className="flex items-baseline justify-center gap-1">
-                                <span className="text-3xl font-bold text-slate-900">{dashboardData?.win_rate}</span>
+                                <span className="text-3xl font-bold text-slate-900">{dashboardData?.win_rate || 0}</span>
                                 <span className="text-sm font-bold text-slate-400">%</span>
                             </div>
                         </div>
@@ -165,7 +165,7 @@ export default function Dashboard() {
                                                     </Badge>
                                                 }
                                             </TableCell>
-                                            <TableCell className="text-right font-bold text-slate-900">฿{account.balance.toLocaleString()}</TableCell>
+                                            <TableCell className="text-right font-bold text-slate-900">${account.balance.toLocaleString()}</TableCell>
                                             <TableCell className="text-right">
                                                 <DeleteAccountButton
                                                     token={session?.access_token || ""}
@@ -182,7 +182,7 @@ export default function Dashboard() {
                                     ))}
                                     {(!dashboardData?.accounts || dashboardData.accounts.length === 0) && (
                                         <tr>
-                                            <td colSpan={4} className="px-6 py-8 text-center text-slate-400">
+                                            <td colSpan={5} className="px-6 py-8 text-center text-slate-400">
                                                 No accounts found. Create one to get started.
                                             </td>
                                         </tr>

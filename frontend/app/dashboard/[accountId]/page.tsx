@@ -159,8 +159,8 @@ export default function AccountDetailPage() {
                         <div className="text-center">
                             <p className="text-xs text-slate-500 mb-1">Balance</p>
                             <div className="flex items-baseline justify-center gap-2">
-                                <span className="text-3xl font-bold text-slate-900">฿{Math.floor(dashboardData?.balance || 0).toLocaleString()}</span>
-                                <span className="text-sm font-medium text-emerald-500">({dashboardData?.pnl || 0 > 0 ? "+" : ""} ฿{dashboardData?.pnl || 0} )</span>
+                                <span className="text-3xl font-bold text-slate-900">${Math.floor(dashboardData?.balance || 0).toLocaleString()}</span>
+                                <span className="text-sm font-medium text-emerald-500">({dashboardData?.pnl || 0 > 0 ? "+" : ""} ${dashboardData?.pnl || 0} )</span>
                             </div>
                         </div>
                         <div className="text-center">
@@ -208,13 +208,13 @@ export default function AccountDetailPage() {
                                 <div className="flex justify-between items-center text-sm">
                                     <span className="text-slate-500">P&L</span>
                                     <span className={`font-bold ${bot.pnl >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
-                                        {bot.pnl >= 0 ? '+' : ''}฿{bot.pnl} <span className="text-xs text-slate-400 font-normal"></span>
+                                        {bot.pnl >= 0 ? '+' : ''}${bot.pnl} <span className="text-xs text-slate-400 font-normal"></span>
                                     </span>
                                 </div>
                                 <div className="flex justify-between items-center text-sm">
                                     <span className="text-slate-500">Today</span>
                                     <span className={`font-bold ${bot.today >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
-                                        {bot.today >= 0 ? '+' : ''}฿{bot.today}
+                                        {bot.today >= 0 ? '+' : ''}${bot.today}
                                     </span>
                                 </div>
                                 <div className="flex justify-between items-center text-sm">

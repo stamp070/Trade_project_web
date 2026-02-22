@@ -33,7 +33,7 @@ export async function updateSession(request: NextRequest) {
         data: { user },
     } = await supabase.auth.getUser()
     const role = await supabase.from("profile").select("role").eq("user_id", user?.id).single()
-
+    const status = await supabase.from("profile").select("account_status").eq("user_id", user?.id).single()
     const path = request.nextUrl.pathname
 
     // 2. กฎสำหรับคน "ยังไม่ Login" (!user)
@@ -47,6 +47,16 @@ export async function updateSession(request: NextRequest) {
         const url = request.nextUrl.clone()
         url.pathname = '/login'
         return NextResponse.redirect(url)
+    }
+
+    // 2.5 กฎสำหรับ "คนโดนแบน"
+    if (status.data?.account_status === "banned") {
+        if (path !== '/' && !path.startsWith('/login')) {
+            const url = request.nextUrl.clone()
+            url.pathname = '/'
+            url.searchParams.set('error', 'banned')
+            return NextResponse.redirect(url)
+        }
     }
 
     // 3. (เพิ่ม) กฎสำหรับคน "Login แล้ว" (user)

@@ -11,6 +11,7 @@ import { useAuth } from "@/components/provider/auth-provider";
 import { createToken, createAccount } from "@/services/mt5";
 import { useRouter } from 'next/navigation'
 import { showToast } from "@/lib/toast-style";
+import { Copy } from "lucide-react";
 
 interface Mt5ModalProps {
     isOpen: boolean;
@@ -125,16 +126,30 @@ export default function Mt5Modal({ isOpen, onOpenChange, onSuccess }: Mt5ModalPr
                         />
                         {<FormItem>
                             <FormLabel>Token</FormLabel>
-                            <Input
-                                value={token}
-                                placeholder="TOKEN FOR AUTHENTICATE"
-                                readOnly
-                                className="bg-slate-100 text-slate-500 cursor-pointer font-mono"
-                                onClick={() => {
-                                    navigator.clipboard.writeText(token)
-                                }}
-                            />
-                            <p className="text-xs text-slate-600">Click to copy token</p>
+                            <div className="relative">
+                                <Input
+                                    value={token}
+                                    placeholder="TOKEN FOR AUTHENTICATE"
+                                    readOnly
+                                    className="bg-slate-100 text-slate-500 cursor-pointer font-mono pr-10"
+                                    onClick={() => {
+                                        if (token) {
+                                            navigator.clipboard.writeText(token)
+                                            showToast.success("Token copied to clipboard")
+                                        }
+                                    }}
+                                />
+                                <Copy
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 cursor-pointer hover:text-slate-600"
+                                    onClick={() => {
+                                        if (token) {
+                                            navigator.clipboard.writeText(token)
+                                            showToast.success("Token copied to clipboard")
+                                        }
+                                    }}
+                                />
+                            </div>
+                            <p className="text-xs text-slate-600 pl-2">Click to copy token</p>
                         </FormItem>}
                         <Button type="submit" disabled={!token}>Submit</Button>
                     </form>

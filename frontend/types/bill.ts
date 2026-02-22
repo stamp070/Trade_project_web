@@ -15,5 +15,5 @@ export interface Invoice {
 
 
 export interface CheckoutRequest {
-    invoice_id: string
+    invoice_ids: string[]
 }

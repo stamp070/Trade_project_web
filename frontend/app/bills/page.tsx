@@ -17,6 +17,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton"
 import { CreditCard, Clock, CheckCircle, AlertCircle } from "lucide-react"
 import { NextResponse } from 'next/server'
+import { CheckoutRequest } from "@/types/bill"
 
 
 export default function BillsPage() {
@@ -35,13 +36,15 @@ export default function BillsPage() {
         fetchBills()
     }, [user, session])
 
-    const unpaidBill = invoices.find(inv => inv.status === 'unpaid')
+    const unpaidBills = invoices.filter(inv => inv.status === 'unpaid')
     const paidBills = invoices.filter(inv => inv.status === 'paid').sort((a, b) => new Date(b.paid_at || "").getTime() - new Date(a.paid_at || "").getTime())
 
-    console.log(unpaidBill)
+    const totalUnpaid = unpaidBills.reduce((sum, bill) => sum + Number(bill.commission_amount), 0)
+
     const isPay = () => {
         const fetch = async () => {
-            const url = await getStripe(unpaidBill?.invoice_id, session?.access_token || "")
+            const invoice_ids = unpaidBills.map(bill => bill.invoice_id)
+            const url = await getStripe({ invoice_ids } as CheckoutRequest, session?.access_token || "")
             if (url) {
                 window.location.href = url.url
             }
@@ -73,33 +76,33 @@ export default function BillsPage() {
                             </div>
                             <div className="text-right">
                                 <div className="text-3xl font-bold text-emerald-600">
-                                    ฿ {unpaidBill ? unpaidBill.commission_amount.toLocaleString() : "0.00"}
+                                    $ {totalUnpaid.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                 </div>
                                 <div className="text-sm text-slate-400 mt-1">Total Amount</div>
                             </div>
                         </div>
                     </CardHeader>
                     <CardContent className="pt-6">
-                        {unpaidBill ? (
+                        {unpaidBills.length > 0 ? (
                             <div className="flex flex-col md:flex-row gap-6 items-center">
                                 <div className="grid grid-cols-2 md:grid-cols-4 gap-6 flex-1 w-full">
                                     <div className="bg-slate-50 p-4 rounded-lg">
-                                        <p className="text-xs text-slate-500 uppercase font-semibold mb-1">Bill Created</p>
-                                        <p className="font-medium text-slate-900">{new Date(unpaidBill.start_period).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
+                                        <p className="text-xs text-slate-500 uppercase font-semibold mb-1">Bills</p>
+                                        <p className="font-medium text-slate-900">{unpaidBills.length}</p>
                                     </div>
                                     <div className="bg-red-50 p-4 rounded-lg">
                                         <p className="text-xs text-red-500 uppercase font-semibold mb-1">Due Date</p>
-                                        <p className="font-medium text-red-700">{new Date(unpaidBill.due_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
+                                        <p className="font-medium text-red-700">{new Date(unpaidBills[0].due_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
                                     </div>
                                     <div className="bg-slate-50 p-4 rounded-lg">
                                         <p className="text-xs text-slate-500 uppercase font-semibold mb-1">Fee Percentage</p>
-                                        <p className="font-medium text-slate-900">{(unpaidBill.commission_rate * 100).toFixed(0)} %</p>
+                                        <p className="font-medium text-slate-900">{(unpaidBills[0].commission_rate * 100).toFixed(0)} %</p>
                                     </div>
                                     <div className="bg-yellow-50 p-4 rounded-lg">
                                         <p className="text-xs text-yellow-600 uppercase font-semibold mb-1">Status</p>
                                         <div className="flex items-center gap-1.5">
                                             <Clock className="w-4 h-4 text-yellow-600" />
-                                            <span className="font-medium text-yellow-700 capitalize">{unpaidBill.status}</span>
+                                            <span className="font-medium text-yellow-700 capitalize">unpaid</span>
                                         </div>
                                     </div>
                                 </div>
@@ -151,7 +154,7 @@ export default function BillsPage() {
                                                 </Badge>
                                             </TableCell>
                                             <TableCell className="text-right font-bold text-slate-900">
-                                                ฿ {bill.commission_amount.toLocaleString()}
+                                                $ {bill.commission_amount.toLocaleString()}
                                             </TableCell>
                                         </TableRow>
                                     ))

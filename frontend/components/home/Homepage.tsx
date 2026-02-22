@@ -1,11 +1,23 @@
+'use client'
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { ArrowRight, BarChart3, ShieldCheck, Zap, Euro, Coins, DollarSign, TrendingUp } from "lucide-react";
 import Link from "next/link"
+import { useSearchParams } from "next/navigation";
+import { useEffect } from "react";
+import { showToast } from "@/lib/toast-style";
+import TradingChart from "@/components/chart/trading-chart";
 
 
 export default function Home() {
+    const error = useSearchParams()
+
+    useEffect(() => {
+        if (error.get('error') === 'banned') {
+            showToast.error('Your account has been banned')
+        }
+    }, [error])
     return (
         <main className="min-h-screen bg-slate-50 font-sans text-slate-900">
 
@@ -55,25 +67,7 @@ export default function Home() {
                     </div>
 
                     {/* Right Content: Abstract Chart Graphic  */}
-                    <div className="relative z-10 hidden md:block pl-10">
-                        <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-8 shadow-2xl transform hover:scale-[1.02] transition-transform duration-500">
-                            <div className="flex items-center justify-between mb-6">
-                                <div className="flex gap-2">
-                                    <div className="h-3 w-3 rounded-full bg-red-500"></div>
-                                    <div className="h-3 w-3 rounded-full bg-yellow-500"></div>
-                                    <div className="h-3 w-3 rounded-full bg-green-500"></div>
-                                </div>
-                                <div className="flex items-center gap-2 text-xs font-mono text-blue-200 bg-blue-900/50 px-2 py-1 rounded">
-                                    <TrendingUp className="w-3 h-3" /> LIVE
-                                </div>
-                            </div>
-                            <div className="h-80 bg-gradient-to-t from-blue-500/10 to-transparent rounded-lg flex items-end justify-between px-4 pb-0 gap-3 border-b border-white/10">
-                                {[35, 55, 40, 65, 50, 80, 75, 95, 60, 85, 100].map((h, i) => (
-                                    <div key={i} style={{ height: `${h}%` }} className="w-full bg-blue-400 rounded-t-sm opacity-80 hover:opacity-100 transition-opacity"></div>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
+                    <TradingChart />
                 </div>
             </section>
 

@@ -32,22 +32,22 @@ export default function Navbar() {
                 {/* --- 2. Desktop Menu Links (Center) --- */}
                 <div className="hidden md:flex items-center gap-1">
                     <Link href="/">
-                        <Button variant="ghost" className="text-slate-600 hover:bg-transparent hover:text-blue-600 hover:underline underline-offset-6">
+                        <Button variant="ghost" className="text-slate-600 hover:bg-transparent decoration-2 hover:text-blue-600 hover:underline underline-offset-6">
                             Home
                         </Button>
                     </Link>
                     <Link href="/dashboard">
-                        <Button variant="ghost" className="text-slate-600 hover:bg-transparent hover:text-blue-600 hover:underline underline-offset-6">
+                        <Button variant="ghost" className="text-slate-600 hover:bg-transparent decoration-2 hover:text-blue-600 hover:underline underline-offset-6">
                             Dashboard
                         </Button>
                     </Link>
                     <Link href="/bots">
-                        <Button variant="ghost" className="text-slate-600 hover:bg-transparent hover:text-blue-600 hover:underline underline-offset-6">
+                        <Button variant="ghost" className="text-slate-600 hover:bg-transparent decoration-2 hover:text-blue-600 hover:underline underline-offset-6">
                             Trading Bots
                         </Button>
                     </Link>
                     <Link href="/bills">
-                        <Button variant="ghost" className="text-slate-600 hover:bg-transparent hover:text-blue-600 hover:underline underline-offset-6">
+                        <Button variant="ghost" className="text-slate-600 hover:bg-transparent decoration-2 hover:text-blue-600 hover:underline underline-offset-6">
                             Bills
                         </Button>
                     </Link>

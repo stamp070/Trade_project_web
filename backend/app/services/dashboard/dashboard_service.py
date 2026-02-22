@@ -9,7 +9,7 @@ def get_overview_data(user_id: str):
 
     # Get Accounts
     try:
-        accounts_response = supabase.table("mt5_accounts").select("*").eq("user_id", user_id).execute()
+        accounts_response = supabase.table("mt5_accounts").select("*").eq("user_id", user_id).order("balance",desc=True).execute()
         accounts = accounts_response.data if accounts_response.data else []
     except Exception as e:
         print(f"Error fetching accounts: {e}")

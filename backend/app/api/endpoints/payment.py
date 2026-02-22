@@ -8,8 +8,7 @@ router = APIRouter()
 @router.post("/create-checkout-session")
 async def create_checkout_session(request: CheckoutRequest, user = Depends(get_current_user)):
     try:
-        print("request", request)
-        return await create_checkout_session_service(request.invoice_id, user)
+        return await create_checkout_session_service(request.invoice_ids, user)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

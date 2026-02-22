@@ -61,12 +61,12 @@ export default function Sidebar() {
                 <CardContent className="space-y-4">
                     <div className="flex justify-between items-center">
                         <span className="text-sm text-slate-500">Total Balance</span>
-                        <span className="font-bold text-slate-900">฿{dashboardData?.balance?.toLocaleString() ?? '0'}</span>
+                        <span className="font-bold text-slate-900">${dashboardData?.balance?.toLocaleString() ?? '0'}</span>
                     </div>
                     <div className="flex justify-between items-center">
                         <span className="text-sm text-slate-500">Total P&L</span>
                         <span className={`font-bold ${dashboardData?.total_pnl && dashboardData.total_pnl >= 0 ? "text-emerald-600" : "text-red-500"}`}>
-                            {dashboardData?.total_pnl && dashboardData.total_pnl > 0 ? "+" : ""}฿{dashboardData?.total_pnl?.toLocaleString() ?? '0'}
+                            {dashboardData?.total_pnl && dashboardData.total_pnl > 0 ? "+" : ""}${dashboardData?.total_pnl?.toLocaleString() ?? '0'}
                         </span>
                     </div>
                 </CardContent>

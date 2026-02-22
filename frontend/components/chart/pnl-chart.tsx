@@ -49,7 +49,7 @@ export default function PnlChart({ data }: { data: PnlCircle[] }) {
                                             <span className="text-slate-600 truncate">{entry.name} :</span>
                                         </div>
                                         <span className={`font-bold whitespace-nowrap ${entry.value >= 0 ? 'text-emerald-600' : 'text-red-500'}`}>
-                                            {entry.value >= 0 ? '+' : ''} ฿ {entry.value.toLocaleString()}
+                                            {entry.value >= 0 ? '+' : ''} $ {entry.value.toLocaleString()}
                                         </span>
                                     </div>
                                 ))
