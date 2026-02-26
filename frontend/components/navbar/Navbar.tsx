@@ -53,7 +53,7 @@ export default function Navbar() {
                     </Link>
                     {isAdmin && (
                         <Link href="/admin">
-                            <Button variant="ghost" className="text-slate-600 hover:bg-transparent hover:text-blue-600 hover:underline underline-offset-6">
+                            <Button variant="ghost" className="text-slate-600 hover:bg-transparent decoration-2 hover:text-blue-600 hover:underline underline-offset-6">
                                 Admin
                             </Button>
                         </Link>

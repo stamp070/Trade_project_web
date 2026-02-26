@@ -15,15 +15,12 @@ def get_invoice_data(user_id:str):
 
 async def create_checkout_session_service(request: list[str], user):
     supabase = get_supabase_client()
-    
-    # Fetch Invoices
+    # Fetch profile
     try:
-        invoice_response = supabase.table("invoice").select("*").in_("invoice_id", request).execute()
-        invoice_data = invoice_response.data
+        profile = supabase.table("profile").select("*").eq("user_id", user.id).execute()
     except Exception as e:
-        raise Exception("Invoices not found", e)
+        raise Exception("Profile not found", e)
 
-    profile = supabase.table("profile").select("*").eq("user_id", user.id).execute()
     customer_id = profile.data[0].get('stripe_customer_id') if profile.data else None
 
     if not customer_id:
@@ -33,6 +30,13 @@ async def create_checkout_session_service(request: list[str], user):
         )
         customer_id = new_customer.id
         supabase.table("profile").update({"stripe_customer_id": customer_id}).eq("user_id", user.id).execute()
+
+    # Fetch Invoices
+    try:
+        invoice_response = supabase.table("invoice").select("*").in_("invoice_id", request).execute()
+        invoice_data = invoice_response.data
+    except Exception as e:
+        raise Exception("Invoices not found", e)
 
     stripe_items = []
     for item in invoice_data:
@@ -48,7 +52,7 @@ async def create_checkout_session_service(request: list[str], user):
                 },
                 'quantity': 1,
             })
-
+    
     try:
         checkout_session = stripe.checkout.Session.create(
             customer=customer_id,

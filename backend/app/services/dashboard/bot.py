@@ -37,7 +37,7 @@ def get_bot_service(user_id: str):
         "mt5_accounts": accounts
     }
 
-def update_bot_status(bot_id: str, connection: str):
+def update_bot_status(user_id:str,bot_id: str, connection: str):
     supabase = get_supabase_client()
     response = supabase.table('bots').update({'connection': connection }).eq('bot_id', bot_id).execute()
     
@@ -50,4 +50,12 @@ def delete_bot_service(bot_id:str):
         return {"status":"success"}
     except Exception as e:
         print(f"Error deleting bot: {e}")
+        return {"status":"error"}
+
+def disconnected_all_bots(user_id: str):
+    supabase = get_supabase_client()
+    try:
+        supabase.table('bots').update({'connection': 'Disconnected'}).eq('user_id', user_id).execute()
+        return {"status":"success"}
+    except Exception as e:
         return {"status":"error"}

@@ -1,8 +1,8 @@
 "use client"
 import { useEffect, useState } from "react"
 import { useAuth } from "@/components/provider/auth-provider"
-import { getUserInvoices, getStripe } from "@/services/bill"
-import { Invoice } from "@/types/bill"
+import { getUserInvoices, getStripe } from "@/services/payment"
+import { Invoice } from "@/types/invoice"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -17,7 +17,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton"
 import { CreditCard, Clock, CheckCircle, AlertCircle } from "lucide-react"
 import { NextResponse } from 'next/server'
-import { CheckoutRequest } from "@/types/bill"
+import { CheckoutRequest } from "@/types/invoice"
 
 
 export default function BillsPage() {
@@ -36,7 +36,7 @@ export default function BillsPage() {
         fetchBills()
     }, [user, session])
 
-    const unpaidBills = invoices.filter(inv => inv.status === 'unpaid')
+    const unpaidBills = invoices.filter(inv => ['unpaid', 'overdue'].includes(inv.status))
     const paidBills = invoices.filter(inv => inv.status === 'paid').sort((a, b) => new Date(b.paid_at || "").getTime() - new Date(a.paid_at || "").getTime())
 
     const totalUnpaid = unpaidBills.reduce((sum, bill) => sum + Number(bill.commission_amount), 0)

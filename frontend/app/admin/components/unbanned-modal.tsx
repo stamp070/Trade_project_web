@@ -15,7 +15,7 @@ export function UnbannedModal({ user_id, onUnbanned, children }: UnbannedModalPr
     }
     return (
         <AlertDialog>
-            <AlertDialogTrigger>
+            <AlertDialogTrigger asChild>
                 {children}
             </AlertDialogTrigger>
             <AlertDialogContent>

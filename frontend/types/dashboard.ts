@@ -44,8 +44,6 @@ export interface DashboardData {
     pnl_circle: PnlCircle[]
 }
 
-
-
 export interface RecentTrade {
     time: string
     symbol: string
@@ -54,11 +52,17 @@ export interface RecentTrade {
     pnl: number
 }
 
+export interface InvoiceStatus {
+    status: string,
+    day_left: number,
+    date: string
+}
+
 export interface DashboardAccountsData {
     name: string
     balance: number
     pnl: number
-    due_date: string
+    invoice_status: InvoiceStatus
     active_bots: number
     win_rate: number
     total_orders: number
@@ -68,3 +72,5 @@ export interface DashboardAccountsData {
     pnl_graph: PnlGraph[]
     pnl_circle: PnlCircle[]
 }
+
+

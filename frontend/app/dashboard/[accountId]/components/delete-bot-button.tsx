@@ -21,11 +21,12 @@ interface DeleteBotButtonProps {
     token: string
     botId: string
     botName: string
+    disabled?: boolean
     onSuccess?: () => void
     children?: React.ReactNode
 }
 
-export function DeleteBotButton({ token, botId, botName, onSuccess }: DeleteBotButtonProps) {
+export function DeleteBotButton({ token, botId, botName, disabled, onSuccess }: DeleteBotButtonProps) {
     const [isDeleting, setIsDeleting] = useState(false)
 
     const handleDelete = async () => {
@@ -51,8 +52,8 @@ export function DeleteBotButton({ token, botId, botName, onSuccess }: DeleteBotB
     return (
         <AlertDialog>
             <AlertDialogTrigger asChild>
-                <Button variant="ghost" size="icon" className="hover:text-red-600 cursor-pointer">
-                    <Trash2 className="w-4 h-4 text-red-600" />
+                <Button variant="ghost" size="icon" disabled={disabled} className={`cursor-pointer ${disabled ? 'text-slate-400' : 'hover:text-red-600'}`}>
+                    <Trash2 className={`w-4 h-4 ${disabled ? 'text-slate-400' : 'text-red-600'}`} />
                 </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>

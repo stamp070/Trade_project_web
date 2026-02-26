@@ -15,7 +15,7 @@ export function BannedModal({ user_id, onBanned, children }: BannedModalProps) {
     }
     return (
         <AlertDialog>
-            <AlertDialogTrigger>
+            <AlertDialogTrigger asChild>
                 {children}
             </AlertDialogTrigger>
             <AlertDialogContent>

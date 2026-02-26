@@ -28,19 +28,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const supabase = createClient()
 
     useEffect(() => {
+        let isMounted = true
+
         const fetchSession = async () => {
             try {
                 const { data: { session } } = await supabase.auth.getSession()
                 const { data: { user } } = await supabase.auth.getUser()
 
-                setSession(session)
-                setUser(user)
+                if (!isMounted) return
 
-                fetchRole(user?.id ?? "")
+                if (user && session) {
+                    setSession(session)
+                    setUser(user)
+                    await fetchRole(user.id) // wait for role before showing app
+                } else {
+                    setSession(null)
+                    setUser(null)
+                    setRole(null)
+                    setIsAdmin(false)
+                }
             } catch (error) {
                 console.error("Auth error:", error)
             } finally {
-                setIsLoading(false)
+                if (isMounted) {
+                    setIsLoading(false)
+                }
             }
         }
         const fetchRole = async (userID: string) => {
@@ -71,27 +83,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
 
         fetchSession()
+
         // ฟัง Event เมื่อมีการ Login/Logout
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-            setSession(session)
-            setUser(session?.user ?? null)
-            if (session?.user) {
-                // ถ้ามี User ให้ดึง Role
-                fetchRole(session.user.id)
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, newSession) => {
+            if (!isMounted) return
+
+            setSession(newSession)
+            setUser(newSession?.user ?? null)
+
+            if (newSession?.user) {
+                await fetchRole(newSession.user.id)
             } else {
-                // ถ้าไม่มี User (Logout) ให้เคลียร์ค่า
                 setRole(null)
                 setIsAdmin(false)
             }
+
             setIsLoading(false)
 
             if (_event === 'SIGNED_OUT') {
-                setIsAdmin(false)
                 router.push('/login')
             }
         })
 
-        return () => subscription.unsubscribe()
+        return () => {
+            isMounted = false
+            subscription.unsubscribe()
+        }
     }, [supabase, router])
 
     const signOut = async () => {

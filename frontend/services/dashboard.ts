@@ -1,4 +1,4 @@
-import { DashboardData, } from "@/types/dashboard"
+import { DashboardData, InvoiceStatus } from "@/types/dashboard"
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
 

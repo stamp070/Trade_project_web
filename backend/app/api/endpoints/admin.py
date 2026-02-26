@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
-from app.services.admin.admin_dashboard import get_admin_top_dashboard,get_admin_bottom_dashboard
+from app.services.admin.admin_dashboard import get_admin_top_dashboard,get_admin_bottom_dashboard,get_user_profile
 from app.services.admin.handle_user import banned_user,unbanned_user
 from app.core.security import get_current_admin
 
@@ -17,6 +17,13 @@ def get_bottom_dashboard(current_admin = Depends(get_current_admin)):
     data = get_admin_bottom_dashboard()
     if not data:
         raise HTTPException(status_code=404, detail="Admin dashboard not found")
+    return data
+
+@router.get("/get-user-profile/{user_id}")
+def get_user_profile_admin(user_id:str,current_admin = Depends(get_current_admin)):
+    data = get_user_profile(user_id)
+    if not data:
+        raise HTTPException(status_code=404, detail="User profile not found")
     return data
 
 @router.post("/banned/{user_id}")

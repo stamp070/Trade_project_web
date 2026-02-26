@@ -21,6 +21,7 @@ import { useAuth } from "@/components/provider/auth-provider"
 import { Skeleton } from "@/components/ui/skeleton"
 import { BannedModal } from "./banned-modal"
 import { UnbannedModal } from "./unbanned-modal"
+import { ProfileModal } from "./profile-modal"
 
 
 export default function BottomDashboard() {
@@ -50,6 +51,7 @@ export default function BottomDashboard() {
     }
 
     const fetchAdminDashboard = async () => {
+        if (!session) return
         try {
             const data = await get_admin_bottom_dashboard(session?.access_token || "")
             setAdminDashboard(data?.users || [])
@@ -172,9 +174,11 @@ export default function BottomDashboard() {
                                             <TableCell>{new Date(user.updated_at).toLocaleDateString('en-GB')}</TableCell>
                                             <TableCell>
                                                 <div className="flex gap-2">
-                                                    <Button variant="outline" size="icon" className="h-8 w-8">
-                                                        <Eye className="h-4 w-4" />
-                                                    </Button>
+                                                    <ProfileModal user_id={user.user_id}>
+                                                        <Button variant="outline" size="icon" className="h-8 w-8">
+                                                            <Eye className="h-4 w-4" />
+                                                        </Button>
+                                                    </ProfileModal>
                                                     {user.account_status !== "banned" ?
                                                         <BannedModal onBanned={fetchAdminDashboard} user_id={user.user_id}>
                                                             <Button variant="outline" size="icon" className="h-8 w-8 text-red-500 hover:text-red-700">

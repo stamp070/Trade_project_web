@@ -2,6 +2,7 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from supabase import Client
 from app.core.database import get_supabase_client
+from app.services.dashboard.dashboard_service import check_account_invoice
 
 http_bearer = HTTPBearer()
 
@@ -61,5 +62,15 @@ def get_current_admin(current_user = Depends(get_current_user)):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN, 
             detail=str(e),
+            headers={"WWW-Authenticate": "Bearer"}
+        )
+
+def verify_active_payment(current_user = Depends(get_current_user)):
+    invoice_status = check_account_invoice(current_user.id)
+
+    if invoice_status['status'] in ["overdue"]:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, 
+            detail="Payment is not active",
             headers={"WWW-Authenticate": "Bearer"}
         )

@@ -1,5 +1,5 @@
 
-import { Invoice, CheckoutRequest } from "@/types/bill"
+import { Invoice, CheckoutRequest } from "@/types/invoice"
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
 

@@ -2,11 +2,11 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
-from app.core.security import get_current_user
-from app.services.dashboard.dashboard_service import get_overview_data, get_account_detail
+from app.core.security import get_current_user, verify_active_payment
+from app.services.dashboard.dashboard_service import get_overview_data, get_account_detail,check_account_invoice
 from app.services.dashboard.mt5 import create_token_mt5,create_account_mt5,delete_account_mt5
 from app.schema.mt5 import mt5_data,mt5_account
-from app.services.dashboard.bot import create_bot_service,get_bot_service,update_bot_status,delete_bot_service
+from app.services.dashboard.bot import create_bot_service,get_bot_service,update_bot_status,delete_bot_service, disconnected_all_bots
 from app.schema.bot import BotCreate
 
 limiter = Limiter(key_func=get_remote_address)
@@ -16,11 +16,21 @@ router = APIRouter()
 # Dashboard Overview (all account)
 @router.get("/overview")
 def read_dashboard_overview(current_user = Depends(get_current_user)):
-    return get_overview_data(current_user.id)
+    # checking invoice status & Disconnected all bots if overdue
+    invoice_status = check_account_invoice(current_user.id)
+    if invoice_status["status"] == "overdue":
+        disconnected_all_bots(current_user.id)
+
+    # Main function
+    data = get_overview_data(current_user.id)
+    if not data:
+        raise HTTPException(status_code=404, detail="Overview not found")
+    return data
 
 # MT5 (display on dashboard)
 @router.get("/mt5/account/{account_id}")
 def read_account_detail(account_id: str, current_user = Depends(get_current_user)):
+    # Main function
     data = get_account_detail(current_user.id, account_id)
     if not data:
         raise HTTPException(status_code=404, detail="Account not found")
@@ -51,7 +61,7 @@ def delete_account(mt5_id:str,current_user=Depends(get_current_user)):
 # Bots (display on dashboard per account)
 @limiter.limit("20/minute")
 @router.post("/bots/{bot_id}/{connection}")
-def update_bot(request: Request, bot_id: str, connection: str, current_user = Depends(get_current_user)):
+def update_bot(request: Request, bot_id: str, connection: str, current_user = Depends(verify_active_payment)):
     data = update_bot_status(bot_id, connection)
     if not data:
         raise HTTPException(status_code=404, detail="Bot status not found")

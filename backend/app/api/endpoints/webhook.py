@@ -1,9 +1,10 @@
-
 import stripe
 from fastapi import APIRouter, Request, HTTPException, Header
 from app.core.config import get_settings
 from app.core.database import get_supabase_admin_client,get_supabase_client
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
+
+BKK_TZ = timezone(timedelta(hours=7))
 
 router = APIRouter()
 settings = get_settings()
@@ -41,7 +42,7 @@ async def stripe_webhook(request: Request, stripe_signature: str = Header(None))
             data = {
                 "status": "paid",
                 "payment_id": payment_id,
-                "paid_at": datetime.now().isoformat()
+                "paid_at": datetime.now(BKK_TZ).isoformat()
             }
             
             response = supabase.table("invoice").update(data).in_("invoice_id", invoice_ids).execute()

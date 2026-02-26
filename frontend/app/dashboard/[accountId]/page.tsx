@@ -1,6 +1,6 @@
 "use client"
 import { useParams } from "next/navigation"
-import { DeleteBotButton } from "../components/delete-bot-button"
+import { DeleteBotButton } from "./components/delete-bot-button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import {
@@ -34,23 +34,42 @@ export default function AccountDetailPage() {
 
     const [isBotConnected, setIsBotConnected] = useState<Bot[] | null>()
 
-    const fetchData = async () => {
-        if (!session?.access_token) return
+    const [isOverdue, setIsOverdue] = useState(false)
+
+
+    const fetchData = async (signal?: AbortSignal) => {
+        if (!session?.access_token) {
+            setIsLoading(false)
+            return
+        }
         const token = session.access_token
         try {
             const res = await getDashboardAccounts(token || "", accountId)
-            setDashboardData(res)
-            setIsBotConnected(res?.bots)
-
+            if (!signal || !signal.aborted) {
+                setDashboardData(res)
+                setIsBotConnected(res?.bots)
+                console.log(res?.invoice_status.status)
+            }
         } catch (error) {
-            console.error("Error fetching dashboard account data:", error)
+            if (!signal || !signal.aborted) {
+                console.error("Error fetching dashboard account data:", error)
+            }
         } finally {
-            setIsLoading(false)
+            if (!signal || !signal.aborted) {
+                setIsLoading(false)
+            }
         }
     }
 
     useEffect(() => {
-        fetchData()
+        if (isAuthLoading) return
+        const abortController = new AbortController()
+
+        fetchData(abortController.signal)
+
+        return () => {
+            abortController.abort()
+        }
     }, [session, isAuthLoading, accountId])
 
     const handleToggleBot = async (index: number, checked: boolean) => {
@@ -136,12 +155,48 @@ export default function AccountDetailPage() {
                         {/* Right: PnL & Cards */}
                         <div className="flex-1 min-w-0 xl:max-w-md">
                             <div className="grid grid-cols-2 gap-4 mb-6">
-                                <Card className="flex flex-col items-center justify-center p-4 shadow-sm border-none bg-white">
-                                    <div className="text-lg font-semibold mb-1 text-slate-700">Due Date</div>
-                                    <div className="text-xs text-slate-400">Remainings</div>
-                                    <div className="text-4xl font-bold text-slate-900">{dashboardData?.due_date || 0}</div>
-                                    <div className="text-xs text-slate-400 mt-1">days</div>
-                                </Card>
+
+                                {dashboardData?.invoice_status?.status === "active" ? (
+                                    <Card className="flex flex-col items-center justify-center p-4 shadow-sm border-none bg-white">
+                                        <div className="text-xl font-semibold mb-1 text-slate-700">Next Due Date</div>
+                                        <div className="text-xs text-slate-400">Remaining</div>
+                                        <div className="text-4xl font-bold text-slate-900">{dashboardData?.invoice_status?.day_left || 0}</div>
+                                        <div className="text-xs text-slate-400 mt-1">days</div>
+                                    </Card>
+                                ) : dashboardData?.invoice_status?.status === "trial" ? (
+                                    <Card className="flex flex-col items-center justify-center p-4 shadow-sm border-blue-200 bg-blue-50/50">
+                                        <div className="text-xl font-bold mb-1 text-blue-700">Trial Period</div>
+                                        <div className="text-xs text-blue-500 font-medium">Remaining</div>
+                                        <div className="text-4xl font-bold text-blue-800">{dashboardData?.invoice_status?.day_left || 0}</div>
+                                        <div className="text-xs text-blue-500 font-medium mt-1">days</div>
+                                    </Card>
+                                ) : dashboardData?.invoice_status?.status === "overdue" || dashboardData?.invoice_status?.status === "unpaid" ? (
+                                    <Card className={`relative flex flex-col items-center justify-center p-4 shadow-md border-2 border-red-400 bg-red-50`}>
+
+                                        <div className={`relative z-10 text-xl font-black tracking-wider mb-1 text-red-500`}>
+                                            {dashboardData?.invoice_status?.status.toUpperCase()}
+                                        </div>
+
+                                        <div className={`relative z-10 text-sm font-semibold text-red-500`}>
+                                            Days Left
+                                        </div>
+
+                                        <div className={`relative z-10 text-4xl font-black my-1 text-red-800`}>
+                                            {dashboardData?.invoice_status?.day_left || 0}
+                                        </div>
+
+                                        <a href="/bills" className={`z-10 mt-1 px-4 py-1.5 text-xs font-bold text-white rounded-full bg-red-600 hover:bg-red-700`}>
+                                            Pay Now
+                                        </a>
+                                    </Card>
+                                ) : (
+                                    <Card className="flex flex-col items-center justify-center p-4 shadow-sm border-none bg-white">
+                                        <div className="text-xl font-semibold mb-1 text-slate-700">Next Due Date</div>
+                                        <div className="text-4xl font-bold text-slate-700">0</div>
+                                        <div className="text-xs text-slate-500 mt-1">days</div>
+                                    </Card>
+                                )}
+
                                 <Card className="flex flex-col items-center justify-center p-4 shadow-sm border-none bg-white">
                                     <div className="text-lg font-semibold mb-1 text-slate-700">Current Active Bots</div>
                                     <div className="text-4xl font-bold text-slate-900">{dashboardData?.bots.filter((bot) => bot.connection === "Connected").length || 0}</div>
@@ -192,8 +247,9 @@ export default function AccountDetailPage() {
             <div className="bg-white rounded-xl shadow-sm border p-6">
                 <h2 className="text-lg font-bold text-slate-900 mb-6">Trading Bots Performance</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {dashboardData?.bots.length > 0 ? dashboardData?.bots.map((bot, index) => (
-                        <div key={bot.bot_id} className="border rounded-xl p-4 hover:shadow-md transition-shadow">
+                    {(dashboardData?.bots?.length ?? 0) > 0 ? dashboardData?.bots.map((bot, index) => (
+
+                        <div key={bot.bot_id} className={`border rounded-xl p-4 transition-shadow ${dashboardData?.invoice_status.status === "overdue" ? "opacity-60 bg-slate-50 cursor-not-allowed" : "hover:shadow-md"}`}>
                             <div className="flex justify-between items-start mb-4">
                                 <div>
                                     <h3 className="font-bold text-slate-900">{bot.name}</h3>
@@ -228,9 +284,12 @@ export default function AccountDetailPage() {
                             <div className="flex justify-between items-center pt-3 border-t">
                                 <div className="flex items-center gap-2">
                                     <span className="text-xs text-slate-500">Status :</span>
-                                    <Switch checked={isBotConnected?.[index]?.connection === 'Connected'}
+                                    <Switch
+                                        checked={isBotConnected?.[index]?.connection === 'Connected'}
                                         onCheckedChange={(checked) => handleToggleBot(index, checked)}
-                                        className=" origin-left cursor-pointer" />
+                                        disabled={dashboardData?.invoice_status.status === "overdue"}
+                                        className="origin-left cursor-pointer"
+                                    />
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <span className="text-xs text-slate-400">Trades: {bot.trades}</span>
@@ -238,7 +297,8 @@ export default function AccountDetailPage() {
                                         token={session?.access_token || ""}
                                         botId={bot.bot_id}
                                         botName={bot.name}
-                                        onSuccess={fetchData}
+                                        disabled={dashboardData?.invoice_status.status === "overdue"}
+                                        onSuccess={() => fetchData()}
                                     />
                                 </div>
                             </div>
@@ -269,7 +329,7 @@ export default function AccountDetailPage() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {dashboardData?.recent_trades.length > 0 ? dashboardData?.recent_trades.map((trade, i) => (
+                            {(dashboardData?.recent_trades?.length ?? 0) > 0 ? dashboardData?.recent_trades.map((trade, i) => (
                                 <TableRow key={i} className="hover:bg-slate-50">
                                     <TableCell className="text-slate-600 font-medium py-4">{trade.time}</TableCell>
                                     <TableCell className="font-bold text-slate-900 py-4">{trade.symbol}</TableCell>

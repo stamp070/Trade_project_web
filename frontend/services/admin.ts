@@ -1,4 +1,4 @@
-import { total, User } from "@/types/admin"
+import { total, User, user_profile } from "@/types/admin"
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
 
@@ -11,7 +11,7 @@ export async function get_admin_top_dashboard(token: string): Promise<total | nu
             cache: "no-store"
         })
         if (!res.ok) {
-            throw new Error("Failed to fetch admin dashboard data")
+            throw new Error("Failed to fetch top admin dashboard data")
         }
         return res.json()
     } catch (error) {
@@ -28,11 +28,29 @@ export async function get_admin_bottom_dashboard(token: string): Promise<User[] 
             cache: "no-store"
         })
         if (!res.ok) {
-            throw new Error("Failed to fetch admin dashboard data")
+            throw new Error("Failed to fetch bottom admin dashboard data")
         }
         return res.json()
     } catch (error) {
         console.error("Error fetching admin dashboard data:", error)
+        return null
+    }
+}
+
+export async function get_user_profile(token: string, user_id: string): Promise<user_profile | null> {
+    try {
+        const res = await fetch(`${API_URL}/api/admin/get-user-profile/${user_id}`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+            cache: "no-store"
+        })
+        if (!res.ok) {
+            throw new Error("Failed to fetch user profile data")
+        }
+        return res.json()
+    } catch (error) {
+        console.error("Error fetching user profile data:", error)
         return null
     }
 }

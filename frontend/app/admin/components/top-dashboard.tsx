@@ -14,6 +14,7 @@ export default function TopDashboard() {
     const [isloading, setIsloading] = useState(true)
     useEffect(() => {
         const fetchAdminDashboard = async () => {
+            if (!session) return
             try {
                 const data = await get_admin_top_dashboard(session?.access_token || "")
                 setAdminDashboard(data)
@@ -62,7 +63,7 @@ export default function TopDashboard() {
                     <div className="bg-blue-600/10 w-fit p-1 rounded-lg mb-2">
                         <SquareUser className="w-10 h-10 text-blue-600" />
                     </div>
-                    <CardDescription className="text-3xl font-bold text-black-600">{admin_dashboard?.total_user}</CardDescription>
+                    <CardDescription className="text-3xl font-bold text-black-600">{admin_dashboard?.total_user || 0}</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <CardDescription>Total users</CardDescription>
@@ -73,7 +74,7 @@ export default function TopDashboard() {
                     <div className="bg-emerald-600/10 w-fit p-1 rounded-lg mb-2">
                         <CircleDollarSign className="w-10 h-10 text-emerald-600" />
                     </div>
-                    <CardDescription className="text-3xl font-bold text-black-600">{admin_dashboard?.total_commission}</CardDescription>
+                    <CardDescription className="text-3xl font-bold text-black-600">{admin_dashboard?.total_commission || 0}</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <CardDescription>Total Commision</CardDescription>
@@ -84,7 +85,7 @@ export default function TopDashboard() {
                     <div className="bg-purple-600/10 w-fit p-1 rounded-lg mb-2">
                         <ChartCandlestick className="w-10 h-10 text-purple-600" />
                     </div>
-                    <CardDescription className="text-3xl font-bold text-black-600">{admin_dashboard?.total_mt5}</CardDescription>
+                    <CardDescription className="text-3xl font-bold text-black-600">{admin_dashboard?.total_mt5 || 0}</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <CardDescription>MT5 Accounts</CardDescription>

@@ -1,7 +1,7 @@
 import numpy as np
 from stable_baselines3 import PPO
 
-model = PPO.load("app/Ai/model/model_eur_best_300k_test2")
+model = PPO.load("app/Ai/model/PPO/model_eur_best_300k_test2")
 
 
 # TEST need to fix model

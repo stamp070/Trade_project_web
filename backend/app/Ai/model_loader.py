@@ -10,7 +10,7 @@ def load_ai_model():
     print("⏳ กำลังโหลด AI Model 10GB เข้า RAM/VRAM...")
     
     CACHE_DIR = "./app/Ai/model_cache"
-    BASE_MODEL_NAME = "./app/Ai/model/llava_trading_v5"
+    BASE_MODEL_NAME = "./app/Ai/model/LLM/llava_trading_v5"
     
     model,tokenizer = FastVisionModel.from_pretrained(
         model_name=BASE_MODEL_NAME,
