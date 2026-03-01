@@ -1,0 +1,62 @@
+from app.Ai.main_predict import run_eurusd
+from app.core.database import get_supabase_client
+from datetime import datetime, timezone, timedelta
+from app.schema.mt5 import TransactionItem
+from typing import List
+
+BKK_TZ = timezone(timedelta(hours=7))
+
+def sync_transactions(mt5_account: dict, transactions: List[TransactionItem]):
+    if not transactions:
+        return
+
+    supabase = get_supabase_client()
+    mt5_id = mt5_account.get("mt5_id")
+    user_id = mt5_account.get("user_id")
+
+    for tx in transactions:
+        existing = supabase.table("transaction").select("ticket_id").eq("ticket_id", tx.ticket_id).execute()
+        if existing.data:
+            continue
+
+        close_at_str = None
+        if tx.close_at:
+            close_at_str = datetime.fromtimestamp(tx.close_at, tz=BKK_TZ).isoformat()
+
+        open_at_str = None
+        if tx.open_at:
+            open_at_str = datetime.fromtimestamp(tx.open_at, tz=BKK_TZ).isoformat()
+
+        row = {
+            "ticket_id": tx.ticket_id,
+            "tradetype": tx.tradetype,
+            "lotsize": tx.lotsize,
+            "profit_loss": tx.profit_loss,
+            "open_at": open_at_str,
+            "close_at": close_at_str,
+            "mt5_id": mt5_id,
+            "user_id": user_id,
+        }
+
+        try:
+            supabase.table("transaction").insert(row).execute()
+        except Exception as e:
+            print(f"[sync_transactions] Error inserting ticket {tx.ticket_id}: {e}")
+
+
+def process_trade_signal(symbol: str, position: str):
+    if symbol != "EURUSD":
+        raise ValueError(f"Symbol '{symbol}' not supported")
+
+    pos_map = {"SELL": 0, "BUY": 1}
+    position_int = pos_map.get(position.upper(), 0)
+
+    ppo_prediction = run_eurusd(position_int)
+    action_code = int(ppo_prediction)
+
+    print("ppo action : ",action_code)
+
+    return {
+        "status": "success",
+        "command": action_code,
+    }

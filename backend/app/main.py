@@ -7,16 +7,28 @@ from slowapi.errors import RateLimitExceeded
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.middleware import SlowAPIMiddleware
 from app.api.endpoints.dashboard import limiter
+from apscheduler.schedulers.background import BackgroundScheduler
+import threading
 
-from app.Ai.main_predict import main
+from app.Ai.main_predict import run_eurusd, run_llm_cronjob
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+
     # 1. เปิดเซิร์ฟเวอร์ -> สั่งโหลดโมเดล
-    # load_ai_model()
+    load_ai_model()
+
+    # 1.5 รัน LLM สดๆ รอบเดียวก่อนเพื่อให้มีข้อมูลใน Cache ทันทีที่เปิดใช้งาน
+    threading.Thread(target=run_llm_cronjob).start()
+
+    # run cronjob ทุก ชั่วโมง (เฉพาะ LLM)
+    scheduler = BackgroundScheduler()
+    scheduler.add_job(run_llm_cronjob, 'cron', minute=00)
+    scheduler.start()
     yield
+
     # 2. ปิดเซิร์ฟเวอร์ -> สั่งเคลียร์โมเดล
-    # unload_ai_model()
+    unload_ai_model()
 
 
 app = FastAPI(title="Trade Project API", content_docs_url="/docs", redoc_url=None,lifespan=lifespan)
@@ -53,7 +65,7 @@ def read_root():
 
 @app.get("/predict")
 def predict():
-    return main()
+    return run_eurusd()
 
 if __name__ == "__main__":
     import uvicorn

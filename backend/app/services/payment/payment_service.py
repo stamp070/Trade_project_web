@@ -10,7 +10,7 @@ YOUR_DOMAIN = "http://localhost:3000"
 
 def get_invoice_data(user_id:str):
     supabase = get_supabase_client()
-    invoice = supabase.table("invoice").select("*").eq("user_id", user_id).order("due_date",desc=False).execute()
+    invoice = supabase.table("invoice").select("*").eq("user_id", user_id).order("due_date",desc=True).execute()
     return invoice.data
 
 async def create_checkout_session_service(request: list[str], user):

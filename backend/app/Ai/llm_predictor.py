@@ -10,10 +10,10 @@ def llm_predictor(df):
         image_input = generate_image(df)
         
         model = ai_models["model"]
-        tokenizer = ai_models["tokenizer"]
-        token = tokenizer.tokenizer
+        processor = ai_models["processor"]
+        token = ai_models["tokenizer"]
 
-        if model is None or tokenizer is None:
+        if model is None or processor is None:
             return "Model not loaded"
 
         # Construct prompt
@@ -33,8 +33,8 @@ def llm_predictor(df):
         ]
         stop_words = ["###END_ANALYSIS###"]
         
-        input_text = tokenizer.apply_chat_template(messages, add_generation_prompt=True,tokenize=False)
-        inputs = tokenizer(
+        input_text = processor.apply_chat_template(messages, add_generation_prompt=True,tokenize=False)
+        inputs = processor(
             images=[image_input],
             text=input_text,
             add_special_tokens=False,
@@ -51,7 +51,7 @@ def llm_predictor(df):
         input_len = inputs.input_ids.shape[1]
         generated_ids = output[0][input_len:]
 
-        prediction = tokenizer.decode(generated_ids, skip_special_tokens=True)
+        prediction = token.decode(generated_ids, skip_special_tokens=True)
         print("### Prediction Success")
         
         return prediction

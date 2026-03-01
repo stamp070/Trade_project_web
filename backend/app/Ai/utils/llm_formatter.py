@@ -12,7 +12,6 @@ def to_dataframe(res):
     return data
 
 def embeded_data(df):
-    df["Bias"] = 1 if df["Bias"] == "Buy" else -1
     df["Trend"] = 1 if df["Trend"] == "Bullish" else -1
 
     vec = local_embedder.encode([df["Reasoning"]])
