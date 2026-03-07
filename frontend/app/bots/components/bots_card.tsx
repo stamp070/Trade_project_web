@@ -89,7 +89,6 @@ export default function BotsCard({
                     versions={versions}
                     accounts={accounts}
                     onConfirm={(versionId, accountId) => {
-                        console.log('Selected:', versionId, accountId);
                         const json: BotCreate = {
                             "version_id": versionId,
                             "mt5_id": accountId,

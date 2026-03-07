@@ -48,7 +48,6 @@ export default function AccountDetailPage() {
             if (!signal || !signal.aborted) {
                 setDashboardData(res)
                 setIsBotConnected(res?.bots)
-                console.log(res?.invoice_status.status)
             }
         } catch (error) {
             if (!signal || !signal.aborted) {

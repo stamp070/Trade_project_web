@@ -40,6 +40,7 @@ app.add_middleware(SlowAPIMiddleware)
 origins = [
     "http://localhost:3000",
     "http://localhost:8000",
+    "https://trade-project-web-y1nl.vercel.app"
 ]
 
 app.add_middleware(

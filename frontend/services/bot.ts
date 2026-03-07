@@ -55,7 +55,6 @@ export async function createBot(token: String, request: BotCreate): Promise<any>
             body: JSON.stringify(request),
             cache: 'no-store'
         })
-        console.log(res)
         if (!res.ok) {
             throw new Error(`Failed to create bot: ${res.status}`)
         }

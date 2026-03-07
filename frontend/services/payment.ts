@@ -25,7 +25,6 @@ export async function getUserInvoices(token: string, userId: string): Promise<In
 
 export async function getStripe(request: CheckoutRequest, token: string): Promise<{ url: string } | null> {
     try {
-        console.log("request", request)
         const res = await fetch(`${API_URL}/api/payment/create-checkout-session`, {
             method: "POST",
             headers: {

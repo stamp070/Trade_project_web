@@ -15,7 +15,6 @@ import { Trash2, CheckCircle2, XCircle } from "lucide-react"
 export default function Dashboard() {
     const { session, isLoading: isAuthLoading } = useAuth()
     const { dashboardData, isLoading, fetchData } = useDashboard()
-    console.log(dashboardData)
 
     if (isLoading) {
         return (

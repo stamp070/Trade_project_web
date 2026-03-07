@@ -7,7 +7,6 @@ const COLOR = ["#db2777", "#fbbf24", "#0088FE", "#00C49F", "#FF8042", "#FF0000",
 export default function PnlChart({ data }: { data: PnlCircle[] }) {
     const hasData = data && data.length > 0 && data.some(item => Math.abs(item.value) > 0);
     const chartData = hasData ? data.map(item => ({ ...item, abs_value: Math.abs(item.value) })) : [{ name: 'No Data', abs_value: 1, value: 0 }];
-    console.log("this is circle data", data)
 
     return (
         <div className="flex flex-col gap-6">

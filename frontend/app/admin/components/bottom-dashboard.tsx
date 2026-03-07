@@ -54,7 +54,6 @@ export default function BottomDashboard() {
         if (!session) return
         try {
             const data = await get_admin_bottom_dashboard(session?.access_token || "")
-            console.log(data)
             setAdminDashboard(data?.users || [])
         } catch (error) {
             console.error("Error fetching admin dashboard data:", error)

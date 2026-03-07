@@ -48,7 +48,6 @@ export default function BillsPage() {
             if (url) {
                 window.location.href = url.url
             }
-            console.log(url)
         }
         fetch()
     }

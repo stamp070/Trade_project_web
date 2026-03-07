@@ -58,7 +58,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const fetchRole = async (userID: string) => {
             try {
                 if (!userID) return
-                console.log("this is user naja", userID)
                 const { data, error } = await supabase
                     .from("profile")
                     .select("role") // ดึงมาแค่ role ก็พอครับเพื่อความไว

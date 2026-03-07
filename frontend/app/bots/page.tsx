@@ -33,7 +33,6 @@ export default function Bots() {
             setIsLoading(false)
         }
     }, [session, isAuthLoading])
-    console.log(session?.access_token)
 
     if (isLoading) {
         return <div className="max-w-6xl mx-auto px-6 py-12 flex flex-col gap-4">
