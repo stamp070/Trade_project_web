@@ -101,6 +101,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
             if (_event === 'SIGNED_OUT') {
                 router.push('/login')
+                router.refresh()
             }
         })
 
@@ -113,6 +114,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const signOut = async () => {
         await supabase.auth.signOut()
         router.push('/login')
+        router.refresh()
     }
 
     return (
