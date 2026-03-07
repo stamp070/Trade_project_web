@@ -23,12 +23,13 @@ export interface mt5_account {
 
 export interface Account {
     mt5_id: string
+    mt5_name: string
     user_id: string
     account_name: string
+    status: string
     token: string
     balance: number
     created_at: string
-    pnl: number
 }
 
 export interface DashboardData {

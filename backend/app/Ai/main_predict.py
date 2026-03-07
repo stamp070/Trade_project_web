@@ -34,6 +34,7 @@ def run_llm_cronjob():
         # บันทึกลงตัวแปร Global
         ai_cache["Time"] = datetime.now(BKK_TZ).strftime("%Y-%m-%d %H:%M:%S")
         ai_cache["EURUSD"] = df_formatted
+        logger.info(f"[LLM] llm_prediction: {llm_prediction}")
 
         print("✅ [Cronjob] อัปเดต State LLM ลง Cache สำเร็จ!")
     except Exception as e:
@@ -56,7 +57,6 @@ def run_eurusd(position: int = 0):
     # position: 0 = short, 1 = long
     ppo_prediction = ppo_predictor(df_ppo.iloc[-3:], position, cached_llm) 
 
-    logger.info(f"[LLM] llm_prediction: {llm_prediction}")
     logger.info(f"[PPO] ppo_prediction: {ppo_prediction}")
 
     return ppo_prediction

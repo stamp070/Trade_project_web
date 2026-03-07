@@ -20,7 +20,7 @@ interface Mt5ModalProps {
 }
 const formSchema = z.object({
     account_name: z.string().min(3, "Name must be at least 3 characters long"),
-    mt5_name: z.string().length(10, "MT5 ID must be 10 digits").regex(/^\d+$/, "Must be only digits"),
+    mt5_name: z.string().min(5, "MT5 ID must more than 5 digits").regex(/^\d+$/, "Must be only digits"),
 })
 export default function Mt5Modal({ isOpen, onOpenChange, onSuccess }: Mt5ModalProps) {
     const { session, isLoading: isAuthLoading } = useAuth()
@@ -75,7 +75,7 @@ export default function Mt5Modal({ isOpen, onOpenChange, onSuccess }: Mt5ModalPr
 
     useEffect(() => {
         const timer = setTimeout(() => {
-            if (mt5Name && accountName && mt5Name.length === 10) {
+            if (mt5Name && accountName && mt5Name.length > 5) {
                 generateToken()
             } else {
                 setToken("")
@@ -151,6 +151,21 @@ export default function Mt5Modal({ isOpen, onOpenChange, onSuccess }: Mt5ModalPr
                             </div>
                             <p className="text-xs text-slate-600 pl-2">Click to copy token</p>
                         </FormItem>}
+
+                        <div className="flex items-center gap-2 p-3 rounded-lg bg-blue-50 border border-blue-200">
+                            <div className="flex-1">
+                                <p className="text-sm font-medium text-blue-800">Expert Advisor (EA)</p>
+                                <p className="text-xs text-blue-500">Download and install in MT5</p>
+                            </div>
+                            <a
+                                href={`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/ea/get-ea`}
+                                className="px-3 py-1.5 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors"
+                                download
+                            >
+                                Download
+                            </a>
+                        </div>
+
                         <Button type="submit" disabled={!token}>Submit</Button>
                     </form>
                 </Form>

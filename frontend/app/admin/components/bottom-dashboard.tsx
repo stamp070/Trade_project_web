@@ -54,6 +54,7 @@ export default function BottomDashboard() {
         if (!session) return
         try {
             const data = await get_admin_bottom_dashboard(session?.access_token || "")
+            console.log(data)
             setAdminDashboard(data?.users || [])
         } catch (error) {
             console.error("Error fetching admin dashboard data:", error)
@@ -179,18 +180,19 @@ export default function BottomDashboard() {
                                                             <Eye className="h-4 w-4" />
                                                         </Button>
                                                     </ProfileModal>
-                                                    {user.account_status !== "banned" ?
+                                                    {user.account_status !== "banned" ? (
                                                         <BannedModal onBanned={fetchAdminDashboard} user_id={user.user_id}>
                                                             <Button variant="outline" size="icon" className="h-8 w-8 text-red-500 hover:text-red-700">
                                                                 <BanIcon className="h-4 w-4 text-red-600" />
                                                             </Button>
-                                                        </BannedModal> :
+                                                        </BannedModal>
+                                                    ) : (
                                                         <UnbannedModal onUnbanned={fetchAdminDashboard} user_id={user.user_id}>
                                                             <Button variant="outline" size="icon" className="h-8 w-8 text-green-500 hover:text-green-700">
                                                                 <CircleCheck className="h-4 w-4 text-green-600" />
                                                             </Button>
                                                         </UnbannedModal>
-                                                    }
+                                                    )}
                                                 </div>
                                             </TableCell>
                                         </TableRow>

@@ -1,8 +1,8 @@
-import { total, User, user_profile } from "@/types/admin"
+import { TopAdminDashboard, BottomDashboardResponse, user_profile } from "@/types/admin"
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
 
-export async function get_admin_top_dashboard(token: string): Promise<total | null> {
+export async function get_admin_top_dashboard(token: string): Promise<TopAdminDashboard | null> {
     try {
         const res = await fetch(`${API_URL}/api/admin/top-admin`, {
             headers: {
@@ -19,7 +19,9 @@ export async function get_admin_top_dashboard(token: string): Promise<total | nu
         return null
     }
 }
-export async function get_admin_bottom_dashboard(token: string): Promise<User[] | null> {
+
+
+export async function get_admin_bottom_dashboard(token: string): Promise<BottomDashboardResponse | null> {
     try {
         const res = await fetch(`${API_URL}/api/admin/bottom-admin`, {
             headers: {

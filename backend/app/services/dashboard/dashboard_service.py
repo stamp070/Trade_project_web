@@ -25,7 +25,7 @@ def get_overview_data(user_id: str):
     
     # Get All active bots
     try:
-        active_bots_response = supabase.table("bots").select("bot_id", count="exact").eq("user_id", user_id).eq("connection", "Connected").execute()
+        active_bots_response = supabase.table("bots").select("bot_id", count="exact").eq("user_id", user_id).eq("is_active", True).eq("connection", "Connected").execute()
         active_bots = active_bots_response.count
     except Exception as e:
         print(f"Error fetching active bots: {e}")
@@ -132,6 +132,7 @@ def get_account_detail(user_id: str, account_id: str):
             "pnl": bot_pnl,
             "today": today_pnl,
             "connection": bot['connection'],
+            "is_active": bot['is_active'],
             "trades": bot_trades_count
         })
 
@@ -178,7 +179,7 @@ def get_account_detail(user_id: str, account_id: str):
         "total_orders": total_orders,
         "total_wins": total_wins,
         "bots": bots_data,
-        "recent_trades": recent_trades[-10:],
+        "recent_trades": recent_trades[-40:],
         "pnl_graph": pnl_chart,
         "pnl_circle": pnl_circle,
     }

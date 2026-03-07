@@ -33,7 +33,7 @@ def get_ohlcv(symbol: str, timeframe):
 
 
 def for_ppo(df):
-    high = df["close"]
+    high = df["high"]
     low = df["low"]
     close = df["close"]
     sma50 = ta.sma(close ,50)

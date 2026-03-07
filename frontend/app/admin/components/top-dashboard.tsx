@@ -3,14 +3,14 @@ import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/com
 import { SquareUser, CircleDollarSign, ChartCandlestick } from "lucide-react"
 import { useEffect, useState } from "react"
 import { get_admin_top_dashboard } from "@/services/admin"
-import { total } from "@/types/admin"
+import { TopAdminDashboard } from "@/types/admin"
 import { useAuth } from "@/components/provider/auth-provider"
 import { Skeleton } from "@/components/ui/skeleton"
 
 
 export default function TopDashboard() {
     const { session, user } = useAuth()
-    const [admin_dashboard, setAdminDashboard] = useState<total | null>(null)
+    const [admin_dashboard, setAdminDashboard] = useState<TopAdminDashboard | null>(null)
     const [isloading, setIsloading] = useState(true)
     useEffect(() => {
         const fetchAdminDashboard = async () => {

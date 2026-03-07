@@ -8,13 +8,14 @@ router = APIRouter()
 
 @router.post("/trade-signal")
 async def get_trade_signal(data: TradeSignalRequest):
+    print("### trade-signal ###")
     account = authentication(data.mt5_name, data.token)
     if not account:
         raise HTTPException(status_code=401, detail="Unauthorized Mt5 name & Token")
     update_mt5_status(data.mt5_name, data.token, data.balance)
 
     try:
-        sync_transactions(account, data.transactions)
+        sync_transactions(account, data.transactions,data.symbol)
     except Exception as e:
         print(f"[trade-signal] sync_transactions error: {e}")
     try:

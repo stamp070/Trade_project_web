@@ -7,7 +7,7 @@ export interface Invoice {
     total_profit: number
     commission_rate: number
     commission_amount: number
-    status: 'unpaid' | 'paid'
+    status: 'unpaid' | 'paid' | 'overdue'
     payment_id: string | null
     paid_at: string | null
     due_date: string

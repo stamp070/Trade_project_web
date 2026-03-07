@@ -14,7 +14,6 @@ def create_bot_service(data: BotCreate, user_id: str):
             "mt5_id": data.mt5_id,
             "version_id": data.version_id,
             "currency": data.currency,
-            "connection": "Disconected"
         }).execute()
         return {"status":"success"} if response.data[0] is not None else {"status":"error"}
     except Exception as e:
@@ -37,9 +36,9 @@ def get_bot_service(user_id: str):
         "mt5_accounts": accounts
     }
 
-def update_bot_status(user_id:str,bot_id: str, connection: str):
+def update_bot_status(bot_id: str, is_active: bool):
     supabase = get_supabase_client()
-    response = supabase.table('bots').update({'connection': connection }).eq('bot_id', bot_id).execute()
+    response = supabase.table('bots').update({'is_active': is_active }).eq('bot_id', bot_id).execute()
     
     return response.data
 

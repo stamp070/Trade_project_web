@@ -6,11 +6,11 @@ from app.schema.payment import CheckoutRequest
 
 settings = get_settings()
 stripe.api_key = settings.STRIPE_SECRET_KEY
-YOUR_DOMAIN = "http://localhost:3000"
+YOUR_DOMAIN = "https://drugs-vanilla-deserve-math.trycloudflare.com"
 
 def get_invoice_data(user_id:str):
     supabase = get_supabase_client()
-    invoice = supabase.table("invoice").select("*").eq("user_id", user_id).order("due_date",desc=True).execute()
+    invoice = supabase.table("invoice").select("*").eq("user_id", user_id).order("due_date",desc=False).execute()
     return invoice.data
 
 async def create_checkout_session_service(request: list[str], user):

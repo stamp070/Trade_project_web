@@ -92,11 +92,12 @@ create table public.bots (
   mt5_id uuid null,
   version_id uuid null,
   currency character varying(10) null,
-  connection public.bot_connection_enum null default 'Disconected'::bot_connection_enum,
+  connection public.bot_connection_enum null default 'Disconnected'::bot_connection_enum,
   created_at timestamp with time zone null default now(),
+  is_active boolean null default false,
   constraint bots_pkey primary key (bot_id),
   constraint unique_currency unique (mt5_id, currency),
-  constraint bots_mt5_id_fkey foreign KEY (mt5_id) references mt5_accounts (mt5_id),
+  constraint bots_mt5_id_fkey foreign KEY (mt5_id) references mt5_accounts (mt5_id) on delete set null,
   constraint bots_user_id_fkey foreign KEY (user_id) references profile (user_id) on delete CASCADE,
   constraint bots_version_id_fkey foreign KEY (version_id) references bots_version (version_id)
 ) TABLESPACE pg_default;

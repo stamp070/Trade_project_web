@@ -102,7 +102,7 @@ export default function BillsPage() {
                                         <p className="text-xs text-yellow-600 uppercase font-semibold mb-1">Status</p>
                                         <div className="flex items-center gap-1.5">
                                             <Clock className="w-4 h-4 text-yellow-600" />
-                                            <span className="font-medium text-yellow-700 capitalize">unpaid</span>
+                                            <span className="font-medium text-yellow-700 capitalize">{unpaidBills[0].status}</span>
                                         </div>
                                     </div>
                                 </div>

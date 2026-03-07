@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api.endpoints import dashboard, payment, webhook, admin, mt5
+from app.api.endpoints import dashboard, payment, webhook, admin, mt5, ea
 from app.Ai.model_loader import load_ai_model,unload_ai_model
 from contextlib import asynccontextmanager
 from slowapi.errors import RateLimitExceeded
@@ -40,13 +40,12 @@ app.add_middleware(SlowAPIMiddleware)
 origins = [
     "http://localhost:3000",
     "http://localhost:8000",
-    "https://nena-precontractual-alfonso.ngrok-free.dev/"
 ]
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
-    allow_origin_regex=r"https://.*\.trycloudflare\.com|https://.*\.loca\.lt",
+    allow_origin_regex=r"https://.*\.trycloudflare\.com",
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE"],
     allow_headers=["*"],
@@ -58,6 +57,7 @@ app.include_router(payment.router, prefix="/api/payment", tags=["payment"])
 app.include_router(admin.router, prefix="/api/admin", tags=["admin"])
 app.include_router(mt5.router, prefix="/api/mt5", tags=["mt5"])
 app.include_router(webhook.router, prefix="/api/stripe", tags=["webhook"])
+app.include_router(ea.router, prefix="/api/ea", tags=["ea"])
 
 @app.get("/")
 def read_root():

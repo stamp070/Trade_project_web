@@ -5,6 +5,7 @@ export interface Bot {
     pnl: number
     today: number
     connection: string
+    is_active: boolean
     trades: number
 }
 

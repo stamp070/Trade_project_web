@@ -76,11 +76,10 @@ export default function AccountDetailPage() {
         const bot = isBotConnected?.[index]
         if (!bot) return
 
-        const newStatus = checked ? "Connected" : "Disconected"
         const previousBots = isBotConnected
-        setIsBotConnected(prev => prev?.map((b, i) => i === index ? { ...b, connection: newStatus } : b))
+        setIsBotConnected(prev => prev?.map((b, i) => i === index ? { ...b, is_active: checked } : b))
         try {
-            const updatedBots = await updateBotStatus(session?.access_token || "", bot.bot_id, newStatus)
+            const updatedBots = await updateBotStatus(session?.access_token || "", bot.bot_id, checked)
 
             if (updatedBots && updatedBots.length > 0) {
                 const updatedBotFromApi = updatedBots[0]
@@ -89,11 +88,11 @@ export default function AccountDetailPage() {
                     if (!prev) return prev
                     return {
                         ...prev,
-                        bots: prev.bots.map(b => b.bot_id === bot.bot_id ? { ...b, connection: updatedBotFromApi.connection } : b)
+                        bots: prev.bots.map(b => b.bot_id === bot.bot_id ? { ...b, is_active: updatedBotFromApi.is_active } : b)
                     }
                 })
 
-                setIsBotConnected(prev => prev?.map(b => b.bot_id === bot.bot_id ? { ...b, connection: updatedBotFromApi.connection } : b))
+                setIsBotConnected(prev => prev?.map(b => b.bot_id === bot.bot_id ? { ...b, is_active: updatedBotFromApi.is_active } : b))
             } else {
                 setIsBotConnected(previousBots)
             }
@@ -215,7 +214,7 @@ export default function AccountDetailPage() {
                             <p className="text-xs text-slate-500 mb-1">Balance</p>
                             <div className="flex items-baseline justify-center gap-2">
                                 <span className="text-3xl font-bold text-slate-900">${Math.floor(dashboardData?.balance || 0).toLocaleString()}</span>
-                                <span className="text-sm font-medium text-emerald-500">({dashboardData?.pnl || 0 > 0 ? "+" : ""} ${dashboardData?.pnl || 0} )</span>
+                                <span className={`text-sm font-medium ${Number(dashboardData?.pnl.toFixed(2)) >= 0 ? "text-emerald-500" : "text-red-500"}`}>({Number(dashboardData?.pnl.toFixed(2)) >= 0 ? "+" : ""}${dashboardData?.pnl.toFixed(2)})</span>
                             </div>
                         </div>
                         <div className="text-center">
@@ -264,13 +263,13 @@ export default function AccountDetailPage() {
                                 <div className="flex justify-between items-center text-sm">
                                     <span className="text-slate-500">P&L</span>
                                     <span className={`font-bold ${bot.pnl >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
-                                        {bot.pnl >= 0 ? '+' : ''}${bot.pnl} <span className="text-xs text-slate-400 font-normal"></span>
+                                        {bot.pnl >= 0 ? '+' : ''}${bot.pnl.toFixed(2)} <span className="text-xs text-slate-400 font-normal"></span>
                                     </span>
                                 </div>
                                 <div className="flex justify-between items-center text-sm">
                                     <span className="text-slate-500">Today</span>
                                     <span className={`font-bold ${bot.today >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
-                                        {bot.today >= 0 ? '+' : ''}${bot.today}
+                                        {bot.today >= 0 ? '+' : ''}${bot.today.toFixed(2)}
                                     </span>
                                 </div>
                                 <div className="flex justify-between items-center text-sm">
@@ -285,7 +284,7 @@ export default function AccountDetailPage() {
                                 <div className="flex items-center gap-2">
                                     <span className="text-xs text-slate-500">Status :</span>
                                     <Switch
-                                        checked={isBotConnected?.[index]?.connection === 'Connected'}
+                                        checked={isBotConnected?.[index]?.is_active}
                                         onCheckedChange={(checked) => handleToggleBot(index, checked)}
                                         disabled={dashboardData?.invoice_status.status === "overdue"}
                                         className="origin-left cursor-pointer"

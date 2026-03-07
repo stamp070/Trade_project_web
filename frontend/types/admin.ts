@@ -14,8 +14,12 @@ export interface User {
     mt5_accounts: mt5_id[]
     invoice: invoice[]
 }
+export interface BottomDashboardResponse {
+    users: User[];
+    total_account: number;
+}
 
-export interface total {
+export interface TopAdminDashboard {
     total_user: number
     total_mt5: number
     total_commission: number

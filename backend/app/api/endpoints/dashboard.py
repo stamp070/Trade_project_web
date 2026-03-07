@@ -60,9 +60,9 @@ def delete_account(mt5_id:str,current_user=Depends(get_current_user)):
 
 # Bots (display on dashboard per account)
 @limiter.limit("20/minute")
-@router.post("/bots/{bot_id}/{connection}")
-def update_bot(request: Request, bot_id: str, connection: str, current_user = Depends(verify_active_payment)):
-    data = update_bot_status(bot_id, connection)
+@router.post("/bots/{bot_id}/toggle-active/{is_active}")
+def update_bot(request: Request, bot_id: str, is_active: bool, current_user = Depends(verify_active_payment)):
+    data = update_bot_status(bot_id, is_active)
     if not data:
         raise HTTPException(status_code=404, detail="Bot status not found")
     return data

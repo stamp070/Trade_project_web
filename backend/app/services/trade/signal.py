@@ -6,13 +6,22 @@ from typing import List
 
 BKK_TZ = timezone(timedelta(hours=7))
 
-def sync_transactions(mt5_account: dict, transactions: List[TransactionItem]):
+def sync_transactions(mt5_account: dict, transactions: List[TransactionItem], symbol: str):
     if not transactions:
         return
 
     supabase = get_supabase_client()
     mt5_id = mt5_account.get("mt5_id")
     user_id = mt5_account.get("user_id")
+
+    try:
+        bot_res = supabase.table("bots").select("bot_id,version_id").eq("mt5_id", mt5_id).eq("currency", symbol).execute()
+        if bot_res.data:
+            bot_id = bot_res.data[0]["bot_id"]
+            version_id = bot_res.data[0]["version_id"]
+    except Exception as e:
+        print(f"[sync_transactions] Error getting bot_id: {e}")
+        # return
 
     for tx in transactions:
         existing = supabase.table("transaction").select("ticket_id").eq("ticket_id", tx.ticket_id).execute()
@@ -36,6 +45,8 @@ def sync_transactions(mt5_account: dict, transactions: List[TransactionItem]):
             "close_at": close_at_str,
             "mt5_id": mt5_id,
             "user_id": user_id,
+            "bot_id": bot_id,
+            "version_id": version_id,
         }
 
         try:
@@ -49,6 +60,7 @@ def process_trade_signal(symbol: str, position: str):
         raise ValueError(f"Symbol '{symbol}' not supported")
 
     pos_map = {"SELL": 0, "BUY": 1}
+    print("last position : ",position)
     position_int = pos_map.get(position.upper(), 0)
 
     ppo_prediction = run_eurusd(position_int)

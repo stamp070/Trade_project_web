@@ -2,12 +2,12 @@ import { CardContent, Card } from "@/components/ui/card"
 import { Cell, ResponsiveContainer, PieChart, Pie } from "recharts";
 import { PnlCircle } from "@/types/dashboard"
 
-
-const COLOR = ["#db2777", "#fbbf24", "#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#FF0000", "#00FF00", "#0000FF", "#FFFF00", "#FF00FF", "#00FFFF"]
+const COLOR = ["#db2777", "#fbbf24", "#0088FE", "#00C49F", "#FF8042", "#FF0000", "#00FF00", "#0000FF", "#FFFF00", "#FF00FF", "#00FFFF"]
 
 export default function PnlChart({ data }: { data: PnlCircle[] }) {
-    const hasData = data && data.length > 0 && data.some(item => item.value > 0);
-    const chartData = hasData ? data : [{ name: 'No Data', value: 1 }];
+    const hasData = data && data.length > 0 && data.some(item => Math.abs(item.value) > 0);
+    const chartData = hasData ? data.map(item => ({ ...item, abs_value: Math.abs(item.value) })) : [{ name: 'No Data', abs_value: 1, value: 0 }];
+    console.log("this is circle data", data)
 
     return (
         <div className="flex flex-col gap-6">
@@ -22,13 +22,15 @@ export default function PnlChart({ data }: { data: PnlCircle[] }) {
                                         innerRadius={45}
                                         outerRadius={65}
                                         paddingAngle={hasData ? 5 : 0}
-                                        dataKey="value"
+                                        dataKey="abs_value"
                                         stroke="none"
                                     >
                                         {chartData.map((entry, index) => (
                                             <Cell
                                                 key={`cell-${index}`}
-                                                fill={hasData ? COLOR[index % COLOR.length] : "#cbd5e1"}
+                                                fill={hasData
+                                                    ? (entry.value < 0 ? "#cbd5e1" : COLOR[index % COLOR.length])
+                                                    : "#cbd5e1"}
                                             />
                                         ))}
                                     </Pie>

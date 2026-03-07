@@ -1,6 +1,5 @@
 "use client"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { EquityChart } from '@/components/chart/equity-chart'
 import PnlChart from '@/components/chart/pnl-chart'
 import { useAuth } from "@/components/provider/auth-provider"
@@ -16,6 +15,7 @@ import { Trash2, CheckCircle2, XCircle } from "lucide-react"
 export default function Dashboard() {
     const { session, isLoading: isAuthLoading } = useAuth()
     const { dashboardData, isLoading, fetchData } = useDashboard()
+    console.log(dashboardData)
 
     if (isLoading) {
         return (
@@ -86,7 +86,7 @@ export default function Dashboard() {
                                 </Card>
                                 <Card className="flex flex-col items-center justify-center p-4 shadow-sm border-none bg-white">
                                     <div className="text-lg font-semibold mb-1 text-center text-slate-700">Current Active Bots</div>
-                                    <div className="text-4xl font-bold text-slate-900 mt-4">{dashboardData?.accounts.length || 0}</div>
+                                    <div className="text-4xl font-bold text-slate-900 mt-4">{dashboardData?.active_bots || 0}</div>
                                     <div className="text-xs text-slate-400 mt-1">Bots</div>
                                 </Card>
                             </div>
@@ -99,7 +99,7 @@ export default function Dashboard() {
                             <p className="text-xs text-slate-500 mb-1">Balance</p>
                             <div className="flex items-baseline justify-center gap-2">
                                 <span className="text-3xl font-bold text-slate-900">${Math.floor(dashboardData?.balance || 0).toLocaleString()}</span>
-                                <span className="text-sm font-medium text-emerald-500">({dashboardData?.total_pnl || 0 > 0 ? "+" : ""} ${dashboardData?.total_pnl || 0})</span>
+                                <span className="text-sm font-medium text-emerald-500">({dashboardData?.total_pnl || 0 > 0 ? "+" : ""} ${dashboardData?.total_pnl.toFixed(2) || 0})</span>
                             </div>
                         </div>
                         <div className="text-center">

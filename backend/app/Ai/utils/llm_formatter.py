@@ -12,7 +12,7 @@ def to_dataframe(res):
     return data
 
 def embeded_data(df):
-    df["Trend"] = 1 if df["Trend"] == "Bullish" else -1
+    df["Trend"] = 1 if str(df["Trend"]).strip().upper() == "BULLISH" else -1
 
     vec = local_embedder.encode([df["Reasoning"]])
     transform = pca.transform(vec)
@@ -31,5 +31,6 @@ def embeded_data(df):
 def format_llm_response(response):
     data = to_dataframe(response)
     res = embeded_data(data)
+    print(res)
     res = pd.DataFrame([res])
     return res
