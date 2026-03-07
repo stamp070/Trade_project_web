@@ -4,7 +4,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
 
 export async function getDashboardOverview(token: string): Promise<DashboardData | null> {
     try {
-        const res = await fetch(`${API_URL}/api/overview`, {
+        const res = await fetch(`${API_URL}/api/dashboard/overview`, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },

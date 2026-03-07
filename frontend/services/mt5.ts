@@ -5,7 +5,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
 
 export async function getDashboardAccounts(token: string, account_id: string): Promise<DashboardAccountsData | null> {
     try {
-        const res = await fetch(`${API_URL}/api/mt5/account/${account_id}`, {
+        const res = await fetch(`${API_URL}/api/dashboard/account/${account_id}`, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
@@ -28,7 +28,7 @@ export async function getDashboardAccounts(token: string, account_id: string): P
 
 export async function createToken(token: string, tokenMt5: mt5_data): Promise<{ token: string, status: string } | null> {
     try {
-        const res = await fetch(`${API_URL}/api/mt5/create-token`, {
+        const res = await fetch(`${API_URL}/api/dashboard/create-token`, {
             method: "POST",
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -49,7 +49,7 @@ export async function createToken(token: string, tokenMt5: mt5_data): Promise<{ 
 
 export async function createAccount(token: string, accountMt5: mt5_account): Promise<{ token: string, status: string } | null> {
     try {
-        const res = await fetch(`${API_URL}/api/mt5/create-account`, {
+        const res = await fetch(`${API_URL}/api/dashboard/create-account`, {
             method: "POST",
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -70,7 +70,7 @@ export async function createAccount(token: string, accountMt5: mt5_account): Pro
 
 export async function deleteAccount(token: string, MT5_id: string): Promise<{ status: string } | null> {
     try {
-        const res = await fetch(`${API_URL}/api/mt5/delete-account/${MT5_id}`, {
+        const res = await fetch(`${API_URL}/api/dashboard/delete-account/${MT5_id}`, {
             method: "DELETE",
             headers: {
                 Authorization: `Bearer ${token}`,

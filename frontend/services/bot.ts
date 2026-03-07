@@ -4,7 +4,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
 
 export async function updateBotStatus(token: string, bot_id: string, is_active: boolean): Promise<Bot[] | null> {
     try {
-        const res = await fetch(`${API_URL}/api/bots/${bot_id}/toggle-active/${is_active}`, {
+        const res = await fetch(`${API_URL}/api/bots/toggle-active/${bot_id}/${is_active}`, {
             method: "POST",
             headers: {
                 Authorization: `Bearer ${token}`,
