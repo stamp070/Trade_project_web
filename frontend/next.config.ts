@@ -2,14 +2,12 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /* config options here */
-  output: "standalone",
+  // ถ้าเปิดใช้ API Proxy (เมื่อเรียก /api ให้ยิงไปหา Backend อัตโนมัติ) ให้เอา Comment // ออก
   // async rewrites() {
   //   return [
   //     {
-  //       // เมื่อมีการเรียก /api/... จากหน้าเว็บ
   //       source: '/api/:path*',
-  //       // ให้ส่งต่อไปที่ Backend ในเครื่อง (เปลี่ยนพอร์ตให้ตรงกับ Backend ของคุณ)
-  //       destination: 'http://localhost:8000/api/:path*',
+  //       destination: process.env.NEXT_PUBLIC_API_URL + '/api/:path*' || 'http://localhost:8000/api/:path*',
   //     },
   //   ];
   // },

@@ -6,7 +6,11 @@ from app.schema.payment import CheckoutRequest
 
 settings = get_settings()
 stripe.api_key = settings.STRIPE_SECRET_KEY
-YOUR_DOMAIN = "https://drugs-vanilla-deserve-math.trycloudflare.com"
+
+if settings.FRONTEND_URL:
+    YOUR_DOMAIN = settings.FRONTEND_URL
+else:
+    YOUR_DOMAIN = "http://localhost:8000"
 
 def get_invoice_data(user_id:str):
     supabase = get_supabase_client()

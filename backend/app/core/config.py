@@ -15,6 +15,8 @@ class Settings(BaseSettings):
     STRIPE_WEBHOOK_SECRET: str
 
     EA_SALT:str
+
+    FRONTEND_URL:str
     
     class Config:
         env_file = ".env"
