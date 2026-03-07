@@ -15,33 +15,53 @@ import { createClient } from "@/utils/supabase/client"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 
+import { z } from "zod"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+
+const signUpSchema = z.object({
+  email: z.string().min(1, { message: "Email is required" }).email({ message: "Invalid email address" }),
+  password: z
+    .string()
+    .min(8, { message: "Must be at least 8 characters long." })
+    .regex(/[a-z]/, { message: "Must contain at least one lowercase letter (a-z)" })
+    .regex(/[A-Z]/, { message: "Must contain at least one uppercase letter (A-Z)" })
+    .regex(/[0-9]/, { message: "Must contain at least one number (0-9)" })
+    .regex(/[^a-zA-Z0-9]/, { message: "Must contain at least one special character (!@#$%^&*...)" }),
+  confirmPassword: z.string().min(1, { message: "Please confirm your password" }),
+}).refine(data => data.password === data.confirmPassword, {
+  message: "Passwords do not match",
+  path: ["confirmPassword"],
+})
+
+type SignUpFormValues = z.infer<typeof signUpSchema>
+
 export function SignupForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
   const router = useRouter()
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [confirmPassword, setConfirmPassword] = useState("")
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [authError, setAuthError] = useState<string | null>(null)
+
+  const form = useForm<SignUpFormValues>({
+    resolver: zodResolver(signUpSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+      confirmPassword: "",
+    },
+  })
 
   const supabase = createClient()
 
-  const handleSignUp = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const onSubmit = async (data: SignUpFormValues) => {
     setLoading(true)
-    setError(null)
-
-    if (password !== confirmPassword) {
-      setError("Passwords do not match")
-      setLoading(false)
-      return
-    }
+    setAuthError(null)
 
     const { error } = await supabase.auth.signUp({
-      email,
-      password,
+      email: data.email,
+      password: data.password,
       options: {
         emailRedirectTo: `${window.location.origin}/auth/callback`,
         data: {
@@ -51,7 +71,7 @@ export function SignupForm({
     })
 
     if (error) {
-      setError(error.message)
+      setAuthError(error.message)
       setLoading(false)
     } else {
       router.push("/dashboard") // Or show a success message to check email
@@ -76,7 +96,7 @@ export function SignupForm({
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card className="overflow-hidden p-0">
         <CardContent>
-          <form onSubmit={handleSignUp} className="p-6 md:p-8">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="p-6 md:p-8">
             <FieldGroup>
               <div className="flex flex-col items-center gap-2 text-center">
                 <h1 className="text-2xl font-bold">Create your account</h1>
@@ -84,8 +104,8 @@ export function SignupForm({
                   Enter your email below to create your account
                 </p>
               </div>
-              {error && (
-                <div className="text-red-500 text-sm text-center">{error}</div>
+              {authError && (
+                <div className="text-red-500 text-sm text-center">{authError}</div>
               )}
               <Field>
                 <FieldLabel htmlFor="email">Email</FieldLabel>
@@ -93,10 +113,11 @@ export function SignupForm({
                   id="email"
                   type="email"
                   placeholder="user@example.com"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  {...form.register("email")}
                 />
+                {form.formState.errors.email && (
+                  <p className="text-sm text-red-500">{form.formState.errors.email.message}</p>
+                )}
               </Field>
               <Field>
                 <Field className="grid grid-cols-2 gap-4">
@@ -105,10 +126,11 @@ export function SignupForm({
                     <Input
                       id="password"
                       type="password"
-                      required
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
+                      {...form.register("password")}
                     />
+                    {form.formState.errors.password && (
+                      <p className="text-sm text-red-500">{form.formState.errors.password.message}</p>
+                    )}
                   </Field>
                   <Field>
                     <FieldLabel htmlFor="confirm-password">
@@ -117,10 +139,11 @@ export function SignupForm({
                     <Input
                       id="confirm-password"
                       type="password"
-                      required
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      {...form.register("confirmPassword")}
                     />
+                    {form.formState.errors.confirmPassword && (
+                      <p className="text-sm text-red-500">{form.formState.errors.confirmPassword.message}</p>
+                    )}
                   </Field>
                 </Field>
                 <FieldDescription>
@@ -151,10 +174,8 @@ export function SignupForm({
               </FieldDescription>
             </FieldGroup>
           </form>
-
         </CardContent>
       </Card>
-
     </div>
   )
 }

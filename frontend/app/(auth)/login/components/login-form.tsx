@@ -14,30 +14,46 @@ import { createClient } from "@/utils/supabase/client"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 
+import { z } from "zod"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+
+const loginSchema = z.object({
+    email: z.string().min(1, { message: "Email is required" }).email({ message: "Invalid email address" }),
+    password: z.string().min(1, { message: "Password is required" }),
+})
+
+type LoginFormValues = z.infer<typeof loginSchema>
+
 export function LoginForm({
     className,
     ...props
 }: React.ComponentProps<"form">) {
     const router = useRouter()
-    const [email, setEmail] = useState("")
-    const [password, setPassword] = useState("")
     const [loading, setLoading] = useState(false)
-    const [error, setError] = useState<string | null>(null)
+    const [authError, setAuthError] = useState<string | null>(null)
+
+    const form = useForm<LoginFormValues>({
+        resolver: zodResolver(loginSchema),
+        defaultValues: {
+            email: "",
+            password: "",
+        },
+    })
 
     const supabase = createClient()
 
-    const handleLogin = async (e: React.FormEvent) => {
-        e.preventDefault()
+    const onSubmit = async (data: LoginFormValues) => {
         setLoading(true)
-        setError(null)
+        setAuthError(null)
 
         const { error } = await supabase.auth.signInWithPassword({
-            email,
-            password,
+            email: data.email,
+            password: data.password,
         })
 
         if (error) {
-            setError(error.message)
+            setAuthError(error.message)
             setLoading(false)
         } else {
             router.push("/dashboard")
@@ -59,7 +75,7 @@ export function LoginForm({
     }
 
     return (
-        <form onSubmit={handleLogin} className={cn("flex flex-col gap-6", className)} {...props}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className={cn("flex flex-col gap-6", className)} {...props}>
             <FieldGroup>
                 <div className="flex flex-col items-center gap-1 text-center">
                     <h1 className="text-2xl font-bold">Login to your account</h1>
@@ -67,8 +83,8 @@ export function LoginForm({
                         Enter your email below to login to your account
                     </p>
                 </div>
-                {error && (
-                    <div className="text-red-500 text-sm text-center">{error}</div>
+                {authError && (
+                    <div className="text-red-500 text-sm text-center">{authError}</div>
                 )}
                 <Field>
                     <FieldLabel htmlFor="email">Email</FieldLabel>
@@ -76,10 +92,11 @@ export function LoginForm({
                         id="email"
                         type="email"
                         placeholder="m@example.com"
-                        required
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        {...form.register("email")}
                     />
+                    {form.formState.errors.email && (
+                        <p className="text-sm text-red-500">{form.formState.errors.email.message}</p>
+                    )}
                 </Field>
                 <Field>
                     <div className="flex items-center">
@@ -94,10 +111,11 @@ export function LoginForm({
                     <Input
                         id="password"
                         type="password"
-                        required
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
+                        {...form.register("password")}
                     />
+                    {form.formState.errors.password && (
+                        <p className="text-sm text-red-500">{form.formState.errors.password.message}</p>
+                    )}
                 </Field>
                 <Field>
                     <Button type="submit" disabled={loading}>
@@ -126,3 +144,4 @@ export function LoginForm({
         </form>
     )
 }
+
