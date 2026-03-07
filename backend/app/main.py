@@ -1,12 +1,12 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api.endpoints import dashboard, payment, webhook, admin, mt5, ea
+from app.api.endpoints import dashboard, payment, webhook, admin, mt5, ea, bots
 from app.Ai.model_loader import load_ai_model,unload_ai_model
 from contextlib import asynccontextmanager
 from slowapi.errors import RateLimitExceeded
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.middleware import SlowAPIMiddleware
-from app.api.endpoints.dashboard import limiter
+from app.api.endpoints.bots import limiter
 from apscheduler.schedulers.background import BackgroundScheduler
 import threading
 
@@ -53,10 +53,11 @@ app.add_middleware(
 )
 
 # Include Routers
-app.include_router(dashboard.router, prefix="/api", tags=["dashboard"])
+app.include_router(dashboard.router, prefix="/api/dashboard", tags=["dashboard"])
 app.include_router(payment.router, prefix="/api/payment", tags=["payment"])
 app.include_router(admin.router, prefix="/api/admin", tags=["admin"])
 app.include_router(mt5.router, prefix="/api/mt5", tags=["mt5"])
+app.include_router(bots.router,prefix="/api/bots",tags=["bots"])
 app.include_router(webhook.router, prefix="/api/stripe", tags=["webhook"])
 app.include_router(ea.router, prefix="/api/ea", tags=["ea"])
 
@@ -67,14 +68,3 @@ def read_root():
 @app.get("/predict")
 def predict():
     return run_eurusd()
-
-if __name__ == "__main__":
-    import uvicorn
-    from app.core.config import get_settings
-    settings = get_settings()
-    uvicorn.run(
-        "app.main:app",
-        host=settings.API_HOST,
-        port=settings.API_PORT,
-        reload=True
-    )
