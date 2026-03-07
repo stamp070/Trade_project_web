@@ -100,7 +100,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             setIsLoading(false)
 
             if (_event === 'SIGNED_OUT') {
-                window.location.href = '/login'
+                router.push('/login')
+                router.refresh()
             }
         })
 
@@ -112,7 +113,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const signOut = async () => {
         await supabase.auth.signOut()
-        window.location.href = '/login'
+        router.push('/login')
+        router.refresh()
     }
 
     return (
