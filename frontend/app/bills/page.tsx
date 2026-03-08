@@ -3,6 +3,7 @@ import { useEffect, useState } from "react"
 import { useAuth } from "@/components/provider/auth-provider"
 import { getUserInvoices, getStripe } from "@/services/payment"
 import { Invoice } from "@/types/invoice"
+import { showToast } from "@/lib/toast-style"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -44,9 +45,11 @@ export default function BillsPage() {
     const isPay = () => {
         const fetch = async () => {
             const invoice_ids = unpaidBills.map(bill => bill.invoice_id)
-            const url = await getStripe({ invoice_ids } as CheckoutRequest, session?.access_token || "")
-            if (url) {
-                window.location.href = url.url
+            const response = await getStripe({ invoice_ids } as CheckoutRequest, session?.access_token || "")
+            if (response && response.url) {
+                window.location.href = response.url
+            } else if (response && response.error) {
+                showToast.error(`Payment Error: ${response.error}`)
             }
         }
         fetch()

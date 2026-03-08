@@ -23,7 +23,7 @@ export async function getUserInvoices(token: string, userId: string): Promise<In
     }
 }
 
-export async function getStripe(request: CheckoutRequest, token: string): Promise<{ url: string } | null> {
+export async function getStripe(request: CheckoutRequest, token: string): Promise<{ url?: string; error?: string }> {
     try {
         const res = await fetch(`${API_URL}/api/payment/create-checkout-session`, {
             method: "POST",
@@ -34,12 +34,12 @@ export async function getStripe(request: CheckoutRequest, token: string): Promis
             body: JSON.stringify(request),
             cache: 'no-store'
         })
+        const data = await res.json()
         if (!res.ok) {
-            throw new Error(`Failed to fetch stripe url: ${res.status}`)
+            throw new Error(data.detail || `Failed to fetch stripe url: ${res.status}`)
         }
-        return res.json()
-    } catch (error) {
-        console.error("Error fetching stripe url:", error)
-        return null
+        return data
+    } catch (error: any) {
+        return { error: error.message }
     }
 }
