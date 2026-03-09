@@ -24,6 +24,7 @@ def read_dashboard_overview(current_user = Depends(get_current_user)):
 # MT5 (display on dashboard)
 @router.get("/account/{account_id}")
 def read_account_detail(account_id: str, current_user = Depends(get_current_user)):
+
     # Main function
     data = get_account_detail(current_user.id, account_id)
     if not data:

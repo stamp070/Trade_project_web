@@ -67,5 +67,7 @@ async def create_checkout_session_service(request: list[str], user):
             metadata={"user_id": user.id, "invoice_ids": ",".join(request)}
         )
         return {"url": checkout_session.url}
+    except stripe.error.StripeError as e:
+        raise Exception(e.user_message or str(e))
     except Exception as e:
-        raise Exception("Checkout session failed", e)
+        raise Exception(f"Checkout session failed: {str(e)}")

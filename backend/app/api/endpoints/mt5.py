@@ -1,4 +1,4 @@
-from app.services.mt5.mt5_status import update_mt5_status
+from app.services.mt5.mt5_status import update_mt5_status, update_bot_connection
 from app.services.mt5.mt5_authentication import authentication
 from fastapi import APIRouter, HTTPException
 from app.schema.mt5 import mt5_new_bars, TradeSignalRequest
@@ -12,12 +12,16 @@ async def get_trade_signal(data: TradeSignalRequest):
     account = authentication(data.mt5_name, data.token)
     if not account:
         raise HTTPException(status_code=401, detail="Unauthorized Mt5 name & Token")
+
     update_mt5_status(data.mt5_name, data.token, data.balance)
 
     try:
+        """ Checking Bot Connection & Update transaction """
         sync_transactions(account, data.transactions,data.symbol)
     except Exception as e:
         print(f"[trade-signal] sync_transactions error: {e}")
+        
+    update_bot_connection(data.mt5_name, data.token, data.symbol)
     try:
         result = process_trade_signal(data.symbol, data.position)
         result["action"] = data.action

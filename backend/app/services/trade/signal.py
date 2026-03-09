@@ -15,13 +15,16 @@ def sync_transactions(mt5_account: dict, transactions: List[TransactionItem], sy
     user_id = mt5_account.get("user_id")
 
     try:
-        bot_res = supabase.table("bots").select("bot_id,version_id").eq("mt5_id", mt5_id).eq("currency", symbol).execute()
+        bot_res = supabase.table("bots").select("bot_id,version_id").eq("mt5_id", mt5_id).eq("currency", symbol).eq("is_active", True).execute()
         if bot_res.data:
             bot_id = bot_res.data[0]["bot_id"]
             version_id = bot_res.data[0]["version_id"]
+        else:
+            supabase.table("bots").update({"connection": "Disconnected"}).eq("mt5_id", mt5_id).eq("currency", symbol).execute()
+            return {"status":"error","message":"Error no bot existing or bot is not active"}
     except Exception as e:
         print(f"[sync_transactions] Error getting bot_id: {e}")
-        # return
+        return {"status":"error","message":"Error no bot existing"}
 
     for tx in transactions:
         existing = supabase.table("transaction").select("ticket_id").eq("ticket_id", tx.ticket_id).execute()

@@ -14,7 +14,7 @@ async def stripe_webhook(request: Request, stripe_signature: str = Header(None))
     print("using webhook stripe")
     payload = await request.body()
     sig_header = stripe_signature
-    endpoint_secret = settings.STRIPE_WEBHOOK_SECRET # ต้องเพิ่มใน .env
+    endpoint_secret = settings.STRIPE_WEBHOOK_SECRET
 
     try:
         event = stripe.Webhook.construct_event(
@@ -36,7 +36,7 @@ async def stripe_webhook(request: Request, stripe_signature: str = Header(None))
         print(invoice_ids)
         
         if invoice_ids:
-            supabase = get_supabase_client() # Use Admin client to bypass RLS if needed
+            supabase = get_supabase_client()
             
             # Update Invoice Status
             data = {

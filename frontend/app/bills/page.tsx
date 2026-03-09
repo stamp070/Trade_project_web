@@ -17,7 +17,6 @@ import {
 } from "@/components/ui/table"
 import { Skeleton } from "@/components/ui/skeleton"
 import { CreditCard, Clock, CheckCircle, AlertCircle } from "lucide-react"
-import { NextResponse } from 'next/server'
 import { CheckoutRequest } from "@/types/invoice"
 
 

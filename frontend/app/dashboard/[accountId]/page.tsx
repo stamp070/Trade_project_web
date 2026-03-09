@@ -273,8 +273,8 @@ export default function AccountDetailPage() {
                                 </div>
                                 <div className="flex justify-between items-center text-sm">
                                     <span className="text-slate-500">Connection</span>
-                                    <Badge variant="secondary" className={`${isBotConnected?.[index]?.connection === 'Connected' ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-600'} font-normal`}>
-                                        {isBotConnected?.[index]?.connection === "Connected" ? "Active" : "Inactive"}
+                                    <Badge variant="secondary" className={`${isBotConnected?.[index]?.is_active === true ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-600'} font-normal`}>
+                                        {isBotConnected?.[index]?.is_active === true ? "Active" : "Inactive"}
                                     </Badge>
                                 </div>
                             </div>
