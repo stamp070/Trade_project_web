@@ -4,7 +4,7 @@ from app.schema.bot import BotCreate
 def create_bot_service(data: BotCreate, user_id: str):
     supabase = get_supabase_client()
 
-    test = supabase.table("bots").select("").eq("currency",data.currency).eq("mt5_id",data.mt5_id).execute()
+    test = supabase.table("bots").select("bot_id").eq("currency",data.currency).eq("mt5_id",data.mt5_id).execute()
     if(test.data):
         return {"status":"bot already exist"}
 
