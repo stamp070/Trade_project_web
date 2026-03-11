@@ -112,6 +112,8 @@ def get_account_detail(user_id: str, account_id: str):
     pnl_circle_map = {}
     
     for bot in bots:
+        currency = bot.get('currency')
+        
         if currency not in pnl_circle_map:
             pnl_circle_map[currency] = 0
 
