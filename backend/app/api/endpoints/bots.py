@@ -11,7 +11,7 @@ router = APIRouter()
 limiter = Limiter(key_func=get_remote_address)
 
 @limiter.limit("20/minute")
-@router.post("/toggle-active/{bot_id}/{is_active}")
+@router.put("/toggle-active/{bot_id}/{is_active}")
 def update_bot(request: Request, bot_id: str, is_active: bool, current_user = Depends(verify_active_payment)):
     data = update_bot_status(bot_id, is_active)
     if not data:

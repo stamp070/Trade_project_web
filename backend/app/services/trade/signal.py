@@ -17,6 +17,7 @@ def sync_transactions(mt5_account: dict, transactions: List[TransactionItem], sy
     try:
         bot_res = supabase.table("bots").select("bot_id,version_id").eq("mt5_id", mt5_id).eq("currency", symbol).eq("is_active", True).execute()
         if bot_res.data:
+            supabase.table("bots").update({"connection": "Connected"}).eq("mt5_id", mt5_id).eq("currency", symbol).execute()
             bot_id = bot_res.data[0]["bot_id"]
             version_id = bot_res.data[0]["version_id"]
         else:

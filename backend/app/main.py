@@ -65,6 +65,3 @@ app.include_router(ea.router, prefix="/api/ea", tags=["ea"])
 def read_root():
     return {"message": "Welcome to Trade Project API"}
 
-@app.get("/predict")
-def predict():
-    return run_eurusd()

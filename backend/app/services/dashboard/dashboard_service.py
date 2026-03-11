@@ -9,59 +9,59 @@ GET OVERVIEW DATA
 """
 def get_overview_data(user_id: str):
     supabase = get_supabase_client()
-    transactions = []
-    accounts = []
-    active_bots = 0
-
-    # Get Accounts
-    try:
-        accounts_response = supabase.table("mt5_accounts").select("*").eq("user_id", user_id).order("balance",desc=True).execute()
-        accounts = accounts_response.data if accounts_response.data else []
-    except Exception as e:
-        print(f"Error fetching accounts: {e}")
-
-    total_balance = sum(account['balance'] for account in accounts)
-    transactions = []
     
-    # Get All active bots
+    accounts = []
+    transactions = []
+    pnl_circle = []
+    active_bots = 0
+    total_balance = 0
+
+    # 1. ยุบรวม (Accounts + Transactions + PnL Circle) ในการเรียก DB ครั้งเดียว
     try:
-        active_bots_response = supabase.table("bots").select("bot_id", count="exact").eq("user_id", user_id).eq("is_active", True).eq("connection", "Connected").execute()
-        active_bots = active_bots_response.count
+        response = supabase.table("mt5_accounts").select(
+            "*, transaction(profit_loss, close_at, bot_id)"
+        ).eq("user_id", user_id).order("balance", desc=True).execute()
+        
+        accounts_data = response.data if response.data else []
+        
+        for acc in accounts_data:
+            acc_txs = acc.get('transaction', [])
+            
+            acc_info = {k: v for k, v in acc.items() if k != 'transaction'}
+            accounts.append(acc_info)
+            
+            total_balance += acc_info.get('balance', 0)
+            
+            acc_pnl = sum(t['profit_loss'] for t in acc_txs)
+            pnl_circle.append({
+                'name': acc_info.get('account_name', 'Unknown'),
+                'value': acc_pnl
+            })
+            
+            transactions.extend(acc_txs)
+
+        transactions = sorted(transactions, key=lambda x: x['close_at'])
+
+    except Exception as e:
+        print(f"Error fetching accounts and transactions: {e}")
+
+    # 2. ดึงจำนวน Bot (แยกเรียกเพื่อดึงแค่ Count จะไวกว่าไปดึงข้อมูลมาทั้งหมด)
+    try:
+        bots_response = supabase.table("bots").select(
+            "bot_id", count="exact"
+        ).eq("user_id", user_id).eq("is_active", True).eq("connection", "Connected").execute()
+        
+        active_bots = bots_response.count if bots_response.count else 0
     except Exception as e:
         print(f"Error fetching active bots: {e}")
 
-    # Get All transactions
-    try:
-        response = supabase.table("transaction").select("profit_loss, close_at, bot_id").eq("user_id", user_id).order("close_at").execute()
-        transactions = response.data
-    except Exception as e:
-        print(f"Error fetching transactions: {e}")
-    
-    total_orders = 0
-    total_pnl = 0
-    total_wins = 0
-    win_rate = 0
-    
-    if transactions:
-        total_orders = len(transactions)
-        total_pnl = sum(t['profit_loss'] for t in transactions)
-        total_wins = sum(1 for t in transactions if t['profit_loss'] > 0)
-        
-        if total_orders > 0:
-            win_rate = (total_wins / total_orders) * 100
+    # 3. คำนวณสถิติภาพรวมจากตัวแปรใน Memory (เร็วมาก ไม่ต้องพึ่ง DB แล้ว)
+    total_orders = len(transactions)
+    total_pnl = sum(t['profit_loss'] for t in transactions)
+    total_wins = sum(1 for t in transactions if t['profit_loss'] > 0)
+    win_rate = (total_wins / total_orders * 100) if total_orders > 0 else 0
 
-    # Get All pnl
-    pnl_response = supabase.table("mt5_accounts").select("account_name, transaction(profit_loss)").eq("user_id", user_id).execute()
-    summary = []
-    for t in pnl_response.data:
-        total = sum(t['profit_loss'] for t in t['transaction'])
-        summary.append({
-            'name': t['account_name'],
-            'value': total
-        })
-
-    pnl_circle = summary
-    pnl_chart = _calculate_pnl_graph(transactions)
+    pnl_chart = _calculate_pnl_graph(transactions) if transactions else []
 
     return {
         "balance": total_balance,
@@ -83,39 +83,38 @@ def get_account_detail(user_id: str, account_id: str):
     supabase = get_supabase_client()
     invoice_status = check_account_invoice(user_id)
 
-
-    # Get Account Info
     try:
-        account_response = supabase.table("mt5_accounts").select("*").eq("mt5_id", account_id).eq("user_id", user_id).maybe_single().execute()
-        account = account_response.data
+        response = supabase.table("mt5_accounts").select(
+            "*, bots(*, bots_version(version_name)), transaction(*, bots(currency))"
+        ).eq("mt5_id", account_id).eq("user_id", user_id).maybe_single().execute()
+        
+        account = response.data
     except Exception as e:
-        print(f"Error fetching account info: {e}")
+        print(f"Error fetching account details: {e}")
         return None
     
     if not account:
         return None
 
-    # Get Bots for this Account
-    bots_response = supabase.table("bots").select("*, bots_version(version_name)").eq("mt5_id", account_id).execute()
-    bots = bots_response.data if bots_response.data else []
+    bots = account.get('bots') or []
+    transactions = account.get('transaction') or []
 
-    # Get Transactions for these bots
-    transactions = []
-    response = supabase.table("transaction").select("*, bots(currency)").eq("mt5_id", account_id).order("close_at", desc=True).execute()
-    transactions = response.data if response.data else []
+    transactions.sort(key=lambda x: x.get('close_at') or '', reverse=True)
 
-    # 4. Calculate Stats
     total_orders = len(transactions)
     total_pnl = sum((t.get('profit_loss') or 0) for t in transactions)
     total_wins = sum(1 for t in transactions if (t.get('profit_loss') or 0) > 0)
     win_rate = (total_wins / total_orders * 100) if total_orders > 0 else 0
     active_bots_count = sum(1 for bot in bots if bot.get('connection') == 'ACTIVE')
 
-    # 5. Process Bot Performance
     bots_data = []
     today = datetime.now(BKK_TZ).date()
+    pnl_circle_map = {}
     
     for bot in bots:
+        if currency not in pnl_circle_map:
+            pnl_circle_map[currency] = 0
+
         bot_transactions = [t for t in transactions if t.get('bot_id') == bot.get('bot_id')]
         bot_trades_count = len(bot_transactions)
         bot_pnl = sum((t.get('profit_loss') or 0) for t in bot_transactions)
@@ -136,21 +135,6 @@ def get_account_detail(user_id: str, account_id: str):
             "trades": bot_trades_count
         })
 
-    # Get All pnl
-    pnl_response = supabase.table("bots").select("currency, transaction(profit_loss)").eq("mt5_id", account_id).execute()
-    summary = []
-    if pnl_response.data:
-        for t in pnl_response.data:
-            txs = t.get('transaction') or []
-            total = sum((item.get('profit_loss') or 0) for item in txs)
-            summary.append({
-                'name': t.get('currency', 'Unknown'),
-                'value': total
-            })
-    pnl_circle = summary
-    
-    pnl_chart = _calculate_pnl_graph(transactions)
-
 
     recent_trades = []
     # transactions is desc for table
@@ -160,6 +144,8 @@ def get_account_detail(user_id: str, account_id: str):
              currency = t['bots'].get('currency', 'USD')
         elif t.get('bots') and isinstance(t['bots'], list) and len(t['bots']) > 0:
              currency = t['bots'][0].get('currency', 'USD')
+
+        pnl_circle_map[currency] = pnl_circle_map.get(currency, 0) + float(t.get('profit_loss') or 0)
         
         recent_trades.append({
             "time": datetime.fromisoformat(t['close_at'].replace('Z', '+00:00')).astimezone(BKK_TZ).strftime("%Y-%m-%d %H:%M:%S") if t.get('close_at') else "-",
@@ -168,6 +154,9 @@ def get_account_detail(user_id: str, account_id: str):
             "volume": float(t.get('lotsize', 0)),
             "pnl": float(t.get('profit_loss', 0)),
         })
+    transactions_ascending = sorted(transactions, key=lambda x: x.get('close_at'))
+    pnl_chart = _calculate_pnl_graph(transactions_ascending)
+    pnl_circle = [{'name': k, 'value': v} for k, v in pnl_circle_map.items()]
 
     return {
         "name": account['account_name'] or "Unnamed Account",

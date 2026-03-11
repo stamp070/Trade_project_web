@@ -26,14 +26,14 @@ def get_user_profile_admin(user_id:str,current_admin = Depends(get_current_admin
         raise HTTPException(status_code=404, detail="User profile not found")
     return data
 
-@router.post("/banned/{user_id}")
+@router.put("/banned/{user_id}")
 def post_banned_user(user_id:str,current_admin = Depends(get_current_admin)):
     data = banned_user(user_id)
     if not data:
         raise HTTPException(status_code=404, detail="User not found")
     return data
 
-@router.post("/unbanned/{user_id}")
+@router.put("/unbanned/{user_id}")
 def post_unbanned_user(user_id:str,current_admin = Depends(get_current_admin)):
     data = unbanned_user(user_id)
     if not data:

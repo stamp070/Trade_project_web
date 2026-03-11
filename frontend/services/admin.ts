@@ -60,7 +60,7 @@ export async function get_user_profile(token: string, user_id: string): Promise<
 export async function banned_user(token: string, user_id: string): Promise<void> {
     try {
         const res = await fetch(`${API_URL}/api/admin/banned/${user_id}`, {
-            method: "POST",
+            method: "PUT",
             headers: {
                 Authorization: `Bearer ${token}`,
             },
@@ -77,7 +77,7 @@ export async function banned_user(token: string, user_id: string): Promise<void>
 export async function unbanned_user(token: string, user_id: string): Promise<void> {
     try {
         const res = await fetch(`${API_URL}/api/admin/unbanned/${user_id}`, {
-            method: "POST",
+            method: "PUT",
             headers: {
                 Authorization: `Bearer ${token}`,
             },
