@@ -4,6 +4,8 @@ import { createContext, useContext, useEffect, useState } from "react"
 import { User, Session } from "@supabase/supabase-js"
 import { createClient } from "@/utils/supabase/client" // ต้องมั่นใจว่ามีไฟล์ client นี้
 import { useRouter } from "next/navigation"
+import { serverSignOut } from "@/services/auth"
+import { showToast } from "@/lib/toast-style"
 
 // สร้าง Interface สำหรับ Context
 interface AuthContextType {
@@ -112,7 +114,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }, [supabase, router])
 
     const signOut = async () => {
+        try {
+            // hit the server action to clear cookies
+            await serverSignOut()
+            showToast.success("Sign out successfully")
+        } catch (error) {
+            showToast.error("Error signing out")
+        }
+
         await supabase.auth.signOut()
+
+        setSession(null)
+        setUser(null)
+        setRole(null)
+        setIsAdmin(false)
+
         router.push('/login')
         router.refresh()
     }

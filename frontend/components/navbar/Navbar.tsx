@@ -50,6 +50,11 @@ export default function Navbar() {
                             Bills
                         </Button>
                     </Link>
+                    <Link href="/docs">
+                        <Button variant="ghost" className="text-slate-600 hover:bg-transparent decoration-2 hover:text-blue-600 hover:underline underline-offset-6">
+                            Docs
+                        </Button>
+                    </Link>
                     {isAdmin && (
                         <Link href="/admin">
                             <Button variant="ghost" className="text-slate-600 hover:bg-transparent decoration-2 hover:text-blue-600 hover:underline underline-offset-6">
