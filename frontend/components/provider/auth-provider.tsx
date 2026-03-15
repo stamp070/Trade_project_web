@@ -115,7 +115,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const signOut = async () => {
         try {
-            // hit the server action to clear cookies
             await serverSignOut()
             showToast.success("Sign out successfully")
         } catch (error) {

@@ -4,12 +4,13 @@ import { EquityChart } from '@/components/chart/equity-chart'
 import PnlChart from '@/components/chart/pnl-chart'
 import { useAuth } from "@/components/provider/auth-provider"
 import { DeleteAccountButton } from "./delete-account-button"
+import Link from "next/link"
 import { useDashboard } from "../context/dashboard-context"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Trash2, CheckCircle2, XCircle } from "lucide-react"
+import { Trash2, CheckCircle2, XCircle, FileText } from "lucide-react"
 
 
 export default function Dashboard() {
@@ -65,9 +66,17 @@ export default function Dashboard() {
 
     return (
         <div className="space-y-6">
-            <div className="flex flex-col gap-2">
-                <h1 className="text-3xl font-bold tracking-tight text-slate-900">Dashboard Overview</h1>
-                <p className="text-slate-500">Welcome back, here's what's happening with your portfolio today.</p>
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div className="flex flex-col gap-2">
+                    <h1 className="text-3xl font-bold tracking-tight text-slate-900">Dashboard Overview</h1>
+                    <p className="text-slate-500">Welcome back, here's what's happening with your portfolio today.</p>
+                </div>
+                <Link href="/docs">
+                    <Button variant="outline" className="flex items-center gap-2 text-slate-600 hover:text-blue-600 border-slate-200">
+                        <FileText className="w-4 h-4" />
+                        Documentation
+                    </Button>
+                </Link>
             </div>
 
             <Card className="border-none shadow-sm bg-white overflow-hidden">
