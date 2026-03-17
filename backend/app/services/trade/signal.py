@@ -59,7 +59,7 @@ def sync_transactions(mt5_account: dict, transactions: List[TransactionItem], sy
             print(f"[sync_transactions] Error inserting ticket {tx.ticket_id}: {e}")
 
 
-def process_trade_signal(symbol: str, position: str, unrealized_pnl: float = 0.0):
+def process_trade_signal(symbol: str, position: str):
     if symbol != "EURUSD":
         raise ValueError(f"Symbol '{symbol}' not supported")
 
@@ -67,7 +67,7 @@ def process_trade_signal(symbol: str, position: str, unrealized_pnl: float = 0.0
     print("last position : ",position)
     position_int = pos_map.get(position.upper(), 0)
 
-    ppo_prediction = run_eurusd(position_int, unrealized_pnl)
+    ppo_prediction = run_eurusd(position_int)
     action_code = int(ppo_prediction)
 
     print("ppo action : ",action_code)

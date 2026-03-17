@@ -14,7 +14,6 @@ async def get_trade_signal(data: TradeSignalRequest):
         raise HTTPException(status_code=401, detail="Unauthorized Mt5 name & Token")
 
     update_mt5_status(data.mt5_name, data.token, data.balance)
-
     try:
         """ Checking Bot Connection & Update transaction """
         sync_transactions(account, data.transactions,data.symbol)
