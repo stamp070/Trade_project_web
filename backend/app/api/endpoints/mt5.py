@@ -12,6 +12,9 @@ async def get_trade_signal(data: TradeSignalRequest):
     account = authentication(data.mt5_name, data.token)
     if not account:
         raise HTTPException(status_code=401, detail="Unauthorized Mt5 name & Token")
+    if account.get("is_overdue"):
+        print("Your account is overdue")
+        raise HTTPException(status_code=403, detail="Your account is overdue")
 
     update_mt5_status(data.mt5_name, data.token, data.balance)
     try:
@@ -39,6 +42,8 @@ async def get_status(data: mt5_new_bars):
     account = authentication(data.mt5_name, data.token)
     if not account:
         raise HTTPException(status_code=401, detail="Unauthorized Mt5 name & Token")
+    if account.get("is_overdue"):
+        raise HTTPException(status_code=403, detail="Your account is overdue")
 
     res = update_mt5_status(data.mt5_name, data.token, data.balance)
     if res["status"] == "success":

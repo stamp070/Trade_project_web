@@ -1,4 +1,3 @@
-import MetaTrader5 as mt5
 from app.AI.model_loader import ai_models
 from app.AI.utils.llm_input import format_market_data, generate_image
 

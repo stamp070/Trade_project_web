@@ -10,7 +10,7 @@ from app.api.endpoints.bots import limiter
 from apscheduler.schedulers.background import BackgroundScheduler
 import threading
 
-from app.AI.main_predict import run_prediction, run_llm_cronjob
+from app.AI.main_predict import run_llm_cronjob
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
