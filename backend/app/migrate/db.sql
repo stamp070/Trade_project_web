@@ -51,14 +51,6 @@ create table public.mt5_accounts (
   constraint mts_accounts_user_id_fkey foreign KEY (user_id) references profile (user_id) on delete CASCADE
 ) TABLESPACE pg_default;
 
-create table public.llm_model (
-  llm_model_id uuid not null default extensions.uuid_generate_v4 (),
-  version character varying null,
-  modelpath character varying null,
-  created_at timestamp with time zone null default now(),
-  constraint llm_model_pkey primary key (llm_model_id)
-) TABLESPACE pg_default;
-
 create table public.invoice (
   invoice_id uuid not null default extensions.uuid_generate_v4 (),
   user_id uuid not null,
@@ -78,11 +70,9 @@ create table public.invoice (
 create table public.bots_version (
   version_id uuid not null default extensions.uuid_generate_v4 (),
   ppo_model_id uuid null,
-  llm_model_id uuid null,
   version_name text null,
   created_at timestamp with time zone null default now(),
   constraint bots_version_pkey primary key (version_id),
-  constraint bots_version_llm_model_id_fkey foreign KEY (llm_model_id) references llm_model (llm_model_id),
   constraint bots_version_ppo_model_id_fkey foreign KEY (ppo_model_id) references ppo_model (ppo_model_id)
 ) TABLESPACE pg_default;
 

@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.endpoints import dashboard, payment, webhook, admin, mt5, ea, bots
-from app.Ai.model_loader import load_ai_model,unload_ai_model
+from app.AI.model_loader import load_ai_model,unload_ai_model
 from contextlib import asynccontextmanager
 from slowapi.errors import RateLimitExceeded
 from slowapi import _rate_limit_exceeded_handler
@@ -10,7 +10,7 @@ from app.api.endpoints.bots import limiter
 from apscheduler.schedulers.background import BackgroundScheduler
 import threading
 
-from app.Ai.main_predict import run_eurusd, run_llm_cronjob
+from app.AI.main_predict import run_prediction, run_llm_cronjob
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):

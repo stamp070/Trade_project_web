@@ -16,13 +16,16 @@ async def get_trade_signal(data: TradeSignalRequest):
     update_mt5_status(data.mt5_name, data.token, data.balance)
     try:
         """ Checking Bot Connection & Update transaction """
-        sync_transactions(account, data.transactions,data.symbol)
+        version_id = sync_transactions(account, data.transactions,data.symbol)
+        if isinstance(version_id, dict) and version_id.get("status") == "error":
+            raise ValueError(version_id.get("message"))
     except Exception as e:
         print(f"[trade-signal] sync_transactions error: {e}")
+        raise HTTPException(status_code=400, detail=str(e))
         
     update_bot_connection(data.mt5_name, data.token, data.symbol)
     try:
-        result = process_trade_signal(data.symbol, data.position)
+        result = process_trade_signal(data.symbol, data.position, version_id)
         result["action"] = data.action
         return result
 

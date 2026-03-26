@@ -1,9 +1,8 @@
 import MetaTrader5 as mt5
-from app.Ai.model_loader import ai_models
-from app.Ai.utils.llm_input import format_market_data, generate_image
+from app.AI.model_loader import ai_models
+from app.AI.utils.llm_input import format_market_data, generate_image
 
 
-# fixxxxx
 def llm_predictor(df):
     if df is not None:
         text_input = format_market_data(df.iloc[-1])
@@ -16,7 +15,6 @@ def llm_predictor(df):
         if model is None or processor is None:
             return "Model not loaded"
 
-        # Construct prompt
         instruction = "Analyze this chart and market data."
         messages = [
             {

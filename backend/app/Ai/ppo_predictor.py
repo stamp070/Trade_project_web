@@ -4,46 +4,65 @@ from gymnasium import spaces
 from stable_baselines3 import PPO
 from stable_baselines3.common.vec_env import DummyVecEnv, VecNormalize
 import logging
+import os
 import torch
 
 logger = logging.getLogger("ai_predict")
 
-model = PPO.load("app/Ai/model/PPO/model_eur_best_750k_last1")
+# model = PPO.load("app/Ai/model/PPO/model_eur_best_750k_last1")
 
-# 1. จำลอง Environment ง่ายๆ ให้ DummyVecEnv ไม่ต้องใช้ของพญาช้าง
 class DummyInferenceEnv(gym.Env):
     def __init__(self):
         super().__init__()
-        # ข้อมูล shape ให้ตรงกับ env ตอน Train (ตั้งใจเขียนเผื่อแบบ Box ไว้)
         self.observation_space = spaces.Dict({
             'technical_features': spaces.Box(
                 low=-np.inf, high=np.inf, 
-                shape=(3, 13), # ปรับ shape 13 ให้ตรงกับ self.technical_features จริง!
+                shape=(3, 13),
                 dtype=np.float32
             ),
             'llm_features': spaces.Box(
                 low=-np.inf, high=np.inf, 
-                shape=(9,), # จำนวน LLM features
+                shape=(9,),
                 dtype=np.float32
             )
         })
         self.action_space = spaces.Discrete(2)
         
     def reset(self, seed=None, options=None):
-        pass # จำลองเฉยๆ
+        pass
     def step(self, action):
         pass
 
-# 2. โหลด VecNormalize โดยครอบ DummyInferenceEnv เข้าไป
 dummy_venv = DummyVecEnv([lambda: DummyInferenceEnv()])
-vec_env = VecNormalize.load("app/Ai/model/PPO/vec_normalize.pkl", dummy_venv)
-vec_env.training = False # ปิดการ train state (สำคัญมาก)
-vec_env.norm_reward = False
 
-# TEST need to fix model
-def ppo_predictor(df,position,llm_feature):
+loaded_ppo_models = {}
+loaded_vec_envs = {}
+
+def get_loaded_model(model_path):
+    if model_path not in loaded_ppo_models:
+        logger.info(f"[PPO Register] Loading New Model Version to Memory: {model_path}...")
+        
+        vec_path = f"{model_path}_vec_normalize.pkl"
+        
+        if not os.path.exists(f"{model_path}.zip") and not os.path.exists(model_path):
+            logger.error(f"[ERROR] PPO Model file not found at {model_path}")
+            raise FileNotFoundError(f"PPO Model not found at path: {model_path}")
+        if not os.path.exists(vec_path):
+             logger.warning(f"[WARNING] vec_normalize file not found at {vec_path} May Cause Bad Predictions!")
+             vec_env_cache = VecNormalize(dummy_venv, norm_obs=True, norm_reward=False)
+        else:
+             vec_env_cache = VecNormalize.load(vec_path, dummy_venv)
+             vec_env_cache.training = False 
+             vec_env_cache.norm_reward = False
+        loaded_ppo_models[model_path] = PPO.load(model_path)
+        loaded_vec_envs[model_path] = vec_env_cache
+        
+    return loaded_ppo_models[model_path], loaded_vec_envs[model_path]
+
+def ppo_predictor(df,position,llm_feature,ppo_model_path):
     if df is None:
         return -1
+    model, vec_env = get_loaded_model(ppo_model_path)
     
     pos_arr = np.full((3,1),position)   
     obs_techical = np.hstack((df,pos_arr)).astype(np.float32)
