@@ -102,7 +102,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             setIsLoading(false)
 
             if (_event === 'SIGNED_OUT') {
-                window.location.href = '/login'
+                router.push('/login')
+                router.refresh()
             }
         })
 
@@ -127,7 +128,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setRole(null)
         setIsAdmin(false)
 
-        window.location.href = '/login'
+        router.push('/login')
+        router.refresh()
     }
 
     return (
