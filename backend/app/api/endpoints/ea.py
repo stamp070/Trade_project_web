@@ -4,7 +4,7 @@ import os
 
 router = APIRouter()
 
-FILE_PATH = "ea/expert.ex5"
+FILE_PATH = "ea/ea.ex5"
 
 @router.get("/get-ea")
 async def download_ea():
@@ -13,6 +13,6 @@ async def download_ea():
     
     return FileResponse(
         path=FILE_PATH, 
-        filename="expert.ex5",
+        filename="ea.ex5",
         media_type="application/octet-stream"
     )
