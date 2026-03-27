@@ -32,10 +32,38 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     useEffect(() => {
         let isMounted = true
 
-        const fetchSession = async () => {
+        const fetchRole = async (userID: string) => {
             try {
-                const { data: { session } } = await supabase.auth.getSession()
+                if (!userID) return
+                const { data, error } = await supabase
+                    .from("profile")
+                    .select("role")
+                    .eq("user_id", userID)
+                    .single()
+
+                if (error) {
+                    console.error("Error fetching profile from DB:", error.message)
+                    return
+                }
+
+                if (!isMounted) return
+
+                setRole(data?.role)
+                if (data?.role === 'admin') {
+                    setIsAdmin(true)
+                } else {
+                    setIsAdmin(false)
+                }
+            } catch (error) {
+                console.error("Auth error:", error)
+            }
+        }
+
+        const initializeAuth = async () => {
+            try {
+                // ใช้ getUser() ดึงข้อมูลที่ชัวร์ที่สุดจาก Server ก่อนเพื่อป้องกัน RLS token ว่างเปล่าตอน Refresh
                 const { data: { user } } = await supabase.auth.getUser()
+                const { data: { session } } = await supabase.auth.getSession()
 
                 if (!isMounted) return
 
@@ -52,42 +80,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             } catch (error) {
                 console.error("Auth error:", error)
             } finally {
-                if (isMounted) {
-                    setIsLoading(false)
-                }
-            }
-        }
-        const fetchRole = async (userID: string) => {
-            try {
-                if (!userID) return
-                const { data, error } = await supabase
-                    .from("profile")
-                    .select("role") // ดึงมาแค่ role ก็พอครับเพื่อความไว
-                    .eq("user_id", userID)
-                    .single()
-
-                if (error) {
-                    console.error("Error fetching profile from DB:", error.message)
-                    return
-                }
-                setRole(data?.role)
-
-                // เช็ค Admin    
-                if (data?.role === 'admin') {
-                    setIsAdmin(true)
-                } else {
-                    setIsAdmin(false)
-                }
-            } catch (error) {
-                console.error("Auth error:", error)
+                if (isMounted) setIsLoading(false)
             }
         }
 
-        fetchSession()
+        initializeAuth()
 
         // ฟัง Event เมื่อมีการ Login/Logout
         const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, newSession) => {
             if (!isMounted) return
+
+            // ข้าม INITIAL_SESSION เพราะเราให้ initializeAuth ดึงชัวร์ๆ ผ่าน getUser ไปแล้ว
+            if (_event === 'INITIAL_SESSION') return
 
             setSession(newSession)
             setUser(newSession?.user ?? null)
