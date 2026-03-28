@@ -24,15 +24,19 @@ def get_bot_service(user_id: str):
     supabase = get_supabase_client()
     
     # 1. Fetch all Bot Versions
-    versions_res = supabase.table("bots_version").select("version_id, version_name").execute()
-    versions = [{"id": v['version_id'], "label": v['version_name']} for v in versions_res.data] if versions_res.data else []
+    bots_version_res = supabase.table("bots_version").select("version_id, version_name,win_rate,max_drawdown,update_at").execute()
+    bots_version = [{"id": v['version_id'], 
+                "label": v['version_name'], 
+                "win_rate": v['win_rate'], 
+                "max_drawdown": v['max_drawdown'],
+                "update_at": v['update_at']} for v in bots_version_res.data] if bots_version_res.data else []
 
     # 2. Fetch User's MT5 Accounts
     accounts_res = supabase.table("mt5_accounts").select("mt5_id, account_name").eq("user_id", user_id).execute()
     accounts = [{"id": a['mt5_id'], "label": a['account_name'] or "Unnamed Account"} for a in accounts_res.data] if accounts_res.data else []
 
     return {
-        "bots_version": versions,
+        "bots_version": bots_version,
         "mt5_accounts": accounts
     }
 

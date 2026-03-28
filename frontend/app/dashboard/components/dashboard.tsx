@@ -67,7 +67,7 @@ export default function Dashboard() {
     return (
         <div className="space-y-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-2" id="tour-dashboard-title">
                     <h1 className="text-3xl font-bold tracking-tight text-slate-900">Dashboard Overview</h1>
                     <p className="text-slate-500">Welcome back, here's what's happening with your portfolio today.</p>
                 </div>
@@ -82,11 +82,11 @@ export default function Dashboard() {
             <Card className="border-none shadow-sm bg-white overflow-hidden">
                 <CardContent className="p-6">
                     <div className="flex flex-col xl:flex-row gap-6">
-                        <div className="flex-1 min-w-0 ">
+                        <div className="flex-1 min-w-0 " id="tour-equity-chart">
                             <EquityChart data={dashboardData?.pnl_graph || []} />
                         </div>
                         <div className="flex-1 min-w-0 xl:max-w-md ">
-                            <div className="grid grid-cols-2 gap-4 mb-6">
+                            <div className="grid grid-cols-2 gap-4 mb-6" id="tour-balance-cards">
                                 <Card className="flex flex-col items-center justify-center p-4 shadow-sm border-none bg-white">
                                     <div className="text-lg font-semibold mb-1 text-center text-slate-700">Account Balance</div>
                                     <div className="text-4xl font-bold text-slate-900 mt-4">${Math.floor(dashboardData?.balance || 0).toLocaleString()}</div>
@@ -102,7 +102,7 @@ export default function Dashboard() {
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 mt-8 pt-8 border-t border-slate-100">
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 mt-8 pt-8 border-t border-slate-100" id="tour-stats-footer">
                         <div className="text-center">
                             <p className="text-xs text-slate-500 mb-1">Balance</p>
                             <div className="flex items-baseline justify-center gap-2">
@@ -135,7 +135,7 @@ export default function Dashboard() {
                 </CardContent>
             </Card>
 
-            <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-1 gap-4" id="tour-mt5-accounts">
                 <Card className="border-none shadow-sm bg-white">
                     <CardHeader>
                         <CardTitle className="text-lg font-semibold text-slate-800">Your Accounts</CardTitle>

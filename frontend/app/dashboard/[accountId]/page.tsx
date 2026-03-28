@@ -146,7 +146,7 @@ export default function AccountDetailPage() {
                 <CardContent className="p-6">
                     <div className="flex flex-col xl:flex-row gap-6">
                         {/* Left: Equity Chart */}
-                        <div className="flex-1 min-w-0">
+                        <div className="flex-1 min-w-0" id="tour-account-equity">
                             <EquityChart data={dashboardData?.pnl_graph || []} />
                         </div>
 
@@ -242,7 +242,7 @@ export default function AccountDetailPage() {
             </Card>
 
             {/* Middle Section: Trading Bots Performance */}
-            <div className="bg-white rounded-xl shadow-sm border p-6">
+            <div className="bg-white rounded-xl shadow-sm border p-6" id="tour-account-bots">
                 <h2 className="text-lg font-bold text-slate-900 mb-6">Trading Bots Performance</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {(dashboardData?.bots?.length ?? 0) > 0 ? dashboardData?.bots.map((bot, index) => (
@@ -312,7 +312,7 @@ export default function AccountDetailPage() {
 
             {/* Bottom Section: Recent Trades */}
             <Card className="border-none shadow-sm bg-white">
-                <CardHeader>
+                <CardHeader id="tour-account-trades">
                     <CardTitle className="text-lg font-bold">Recent Trades</CardTitle>
                 </CardHeader>
                 <CardContent>

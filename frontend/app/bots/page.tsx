@@ -6,27 +6,28 @@ import { getBot } from "@/services/bot"
 import { BotData } from "@/types/bot"
 import { Skeleton } from "@/components/ui/skeleton"
 
-
 export default function Bots() {
     const { session, isLoading: isAuthLoading } = useAuth()
     const [botOptions, setBotOptions] = useState<BotData | null>(null)
     const [isLoading, setIsLoading] = useState(true)
 
-    const availableBots = [
-        { name: "EURUSD", winRate: 52, maxDd: -8.2, timeframe: "1 Hr.", lastUpdate: "22 / 12 / 2025" },
-        { name: "JPYUSD", winRate: 52, maxDd: -8.2, timeframe: "1 Hr.", lastUpdate: "22 / 12 / 2025" },
-        { name: "GBPUSD", winRate: 52, maxDd: -8.2, timeframe: "1 Hr.", lastUpdate: "22 / 12 / 2025" },
-    ]
+    const formatDate = (dateStr: string | null) => {
+        if (!dateStr) return "-"
+        const d = new Date(dateStr)
+        const day = String(d.getDate()).padStart(2, '0')
+        const month = String(d.getMonth() + 1).padStart(2, '0')
+        const year = d.getFullYear()
+        return `${day} / ${month} / ${year}`
+    }
 
     useEffect(() => {
+        if (isAuthLoading) return
         try {
             const fetchBot = async () => {
-                if (!session?.access_token) return
-                const data = await getBot(session?.access_token)
+                const data = await getBot(session?.access_token || "")
                 setBotOptions(data)
             }
             fetchBot()
-
         } catch (error) {
             console.error("Error fetching bots:", error)
         } finally {
@@ -48,24 +49,32 @@ export default function Bots() {
         </div>
     }
 
+    const bots = botOptions?.bots_version || []
+    console.log(bots)
     return (
         <div>
             <div className='max-w-6xl mx-auto px-6 py-12'>
-                <h1 className='text-3xl font-bold mb-2 text-center'>Choose Your Trading Bot</h1>
+                <h1 className='text-3xl font-bold mb-2 text-center' id="tour-bots-header">Choose Your Trading Bot</h1>
                 <p className='text-slate-500 mb-8 text-center'>Select and connect your bots to MT5 accounts</p>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {availableBots.map((bot, index) => (
-                        <BotsCard
-                            key={index}
-                            name={bot.name}
-                            winRate={bot.winRate}
-                            maxDd={bot.maxDd}
-                            timeframe={bot.timeframe}
-                            lastUpdate={bot.lastUpdate}
-                            versions={botOptions?.bots_version || []}
-                            accounts={botOptions?.mt5_accounts || []}
-                        />
-                    ))}
+                    {bots.map((bot, index) => {
+                        const filteredVersions = (botOptions?.bots_version || []).filter(v =>
+                            v.label.toUpperCase().includes(bot.label.toUpperCase())
+                        )
+                        return (
+                            <div key={bot.id} id={`tour-bot-card-${index}`}>
+                                <BotsCard
+                                    name={bot.label}
+                                    winRate={bot.win_rate ?? 0}
+                                    maxDd={bot.max_drawdown ?? 0}
+                                    timeframe="1 Hr."
+                                    lastUpdate={formatDate(bot.update_at)}
+                                    versions={filteredVersions}
+                                    accounts={botOptions?.mt5_accounts || []}
+                                />
+                            </div>
+                        )
+                    })}
                 </div>
             </div>
         </div>

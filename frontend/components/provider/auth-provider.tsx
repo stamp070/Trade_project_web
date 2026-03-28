@@ -14,6 +14,8 @@ interface AuthContextType {
     session: Session | null
     isAdmin: boolean
     isLoading: boolean
+    tourState: Record<string, boolean>
+    updateTourState: (tourId: string) => Promise<void>
     signOut: () => Promise<void>
 }
 
@@ -25,6 +27,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [role, setRole] = useState<string | null>(null)
     const [isAdmin, setIsAdmin] = useState(false)
     const [isLoading, setIsLoading] = useState(true)
+    const [tourState, setTourState] = useState<Record<string, boolean>>({})
 
     const router = useRouter()
     const supabase = createClient()
@@ -54,6 +57,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 } else {
                     setIsAdmin(false)
                 }
+
+                // แยกร้องขอ tour_state แบบ safe (ป้องกันแอปพังถ้ายังไม่ได้เพิ่ม column ใน DB)
+                const tourRes = await supabase
+                    .from("profile")
+                    .select("tour_state")
+                    .eq("user_id", userID)
+                    .single()
+
+                setTourState(tourRes?.data?.tour_state || {})
+
             } catch (error) {
                 console.error("Auth error:", error)
             }
@@ -76,6 +89,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                     setUser(null)
                     setRole(null)
                     setIsAdmin(false)
+                    setTourState({})
                 }
             } catch (error) {
                 console.error("Auth error:", error)
@@ -101,12 +115,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             } else {
                 setRole(null)
                 setIsAdmin(false)
+                setTourState({})
             }
 
             setIsLoading(false)
 
             if (_event === 'SIGNED_OUT') {
-                router.push('/login')
+                router.push('/')
                 router.refresh()
             }
         })
@@ -117,27 +132,41 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
     }, [supabase, router])
 
+    const updateTourState = async (tourId: string) => {
+        if (!user) return
+
+        const newState = { ...tourState, [tourId]: true }
+        setTourState(newState)
+
+        console.log("Preparing to send to Supabase:", newState)
+        supabase.from("profile")
+            .update({ tour_state: newState })
+            .eq("user_id", user.id)
+            .then(({ error }) => {
+                if (error) console.error("Error updating tour:", error)
+            })
+    }
+
     const signOut = async () => {
+        router.push('/')
+        router.refresh()
+
         try {
             await serverSignOut()
             showToast.success("Sign out successfully")
         } catch (error) {
             showToast.error("Error signing out")
         }
-
         await supabase.auth.signOut()
 
         setSession(null)
         setUser(null)
         setRole(null)
         setIsAdmin(false)
-
-        router.push('/login')
-        router.refresh()
     }
 
     return (
-        <AuthContext.Provider value={{ user, role, session, isAdmin, isLoading, signOut }}>
+        <AuthContext.Provider value={{ user, role, session, isAdmin, isLoading, tourState, updateTourState, signOut }}>
             {children}
         </AuthContext.Provider>
     )

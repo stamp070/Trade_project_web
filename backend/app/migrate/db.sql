@@ -72,6 +72,9 @@ create table public.bots_version (
   ppo_model_id uuid null,
   version_name text null,
   created_at timestamp with time zone null default now(),
+  win_rate real null,
+  max_drawdown real null,
+  update_at timestamp with time zone null default now(),
   constraint bots_version_pkey primary key (version_id),
   constraint bots_version_ppo_model_id_fkey foreign KEY (ppo_model_id) references ppo_model (ppo_model_id)
 ) TABLESPACE pg_default;

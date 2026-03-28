@@ -122,7 +122,7 @@ export function LoginForm({
                                 )}
                             </Field>
                             <Field>
-                                <Button type="submit" disabled={loading}>
+                                <Button type="submit" disabled={loading} className="bg-blue-600 hover:bg-blue-700">
                                     {loading ? "Logging in..." : "Login"}
                                 </Button>
                             </Field>
@@ -140,7 +140,7 @@ export function LoginForm({
                             </Field>
                             <FieldDescription className="text-center">
                                 Don&apos;t have an account?{" "}
-                                <a href="register" className="underline underline-offset-4">
+                                <a href="register" className="underline underline-offset-4 text-blue-600 hover:text-blue-700">
                                     Sign up
                                 </a>
                             </FieldDescription>

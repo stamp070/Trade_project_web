@@ -12,6 +12,9 @@ export interface Bot {
 export interface BotOption {
     id: string
     label: string
+    win_rate: number
+    max_drawdown: number
+    update_at: string
 }
 
 export interface BotData {

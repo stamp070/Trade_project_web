@@ -12,7 +12,7 @@ async def download_ea():
         return {"error": "File not found"}
     
     return FileResponse(
-        path=FILE_PATH, 
+        path=FILE_PATH,
         filename="ea.ex5",
         media_type="application/octet-stream"
     )

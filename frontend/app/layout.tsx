@@ -3,6 +3,7 @@ import "./globals.css";
 import Navbar from "@/components/navbar/Navbar";
 import { AuthProvider } from "@/components/provider/auth-provider";
 import { Toaster } from "@/components/ui/sonner";
+import GlobalTour from "@/components/onboarding/global-tour";
 
 const kanit = Kanit({
     weight: ["100", "200", "300", "400", "500"],
@@ -23,6 +24,7 @@ export default function RootLayout({
                         <Navbar />
                         {children}
                         <Toaster />
+                        <GlobalTour />
                     </AuthProvider>
                 </main>
             </body>
