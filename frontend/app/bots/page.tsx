@@ -32,6 +32,7 @@ export default function Bots() {
             console.error("Error fetching bots:", error)
         } finally {
             setIsLoading(false)
+            console.log(botOptions)
         }
     }, [session, isAuthLoading])
 
@@ -42,7 +43,7 @@ export default function Bots() {
                 <Skeleton className="h-10 w-1/2 rounded-xl" />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {Array.from({ length: 3 }).map((_, index) => (
+                {Array.from({ length: botOptions?.bots_version.length || 0 }).map((_, index) => (
                     <Skeleton key={index} className="h-80 max-w-md rounded-xl" />
                 ))}
             </div>
@@ -50,19 +51,24 @@ export default function Bots() {
     }
 
     const bots = botOptions?.bots_version || []
-    console.log(bots)
+
+    const gridClass =
+        bots.length === 1 ? "flex justify-center" :
+            bots.length === 2 ? "grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto" :
+                "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+
     return (
         <div>
             <div className='max-w-6xl mx-auto px-6 py-12'>
                 <h1 className='text-3xl font-bold mb-2 text-center' id="tour-bots-header">Choose Your Trading Bot</h1>
                 <p className='text-slate-500 mb-8 text-center'>Select and connect your bots to MT5 accounts</p>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className={gridClass}>
                     {bots.map((bot, index) => {
                         const filteredVersions = (botOptions?.bots_version || []).filter(v =>
                             v.label.toUpperCase().includes(bot.label.toUpperCase())
                         )
                         return (
-                            <div key={bot.id} id={`tour-bot-card-${index}`}>
+                            <div key={bot.id} id={`tour-bot-card-${index}`} className={bots.length === 1 ? "w-full max-w-md" : ""}>
                                 <BotsCard
                                     name={bot.label}
                                     winRate={bot.win_rate ?? 0}
