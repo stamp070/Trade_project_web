@@ -21,12 +21,11 @@ import { CheckoutRequest } from "@/types/invoice"
 
 
 export default function BillsPage() {
-    const { session, user, isLoading: isAuthLoading } = useAuth()
+    const { session, user } = useAuth()
     const [invoices, setInvoices] = useState<Invoice[]>([])
     const [isLoading, setIsLoading] = useState(true)
 
     useEffect(() => {
-        if (isAuthLoading) return
         const fetchBills = async () => {
             if (user?.id && session?.access_token) {
                 const data = await getUserInvoices(session.access_token, user.id)
@@ -35,7 +34,7 @@ export default function BillsPage() {
             setIsLoading(false)
         }
         fetchBills()
-    }, [user, session, isAuthLoading])
+    }, [user, session])
 
     const unpaidBills = invoices.filter(inv => ['unpaid', 'overdue'].includes(inv.status))
     const paidBills = invoices.filter(inv => inv.status === 'paid').sort((a, b) => new Date(b.paid_at || "").getTime() - new Date(a.paid_at || "").getTime())

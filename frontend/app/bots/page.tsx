@@ -21,7 +21,6 @@ export default function Bots() {
     }
 
     useEffect(() => {
-        if (isAuthLoading) return
         const fetchBot = async () => {
             try {
                 const data = await getBot(session?.access_token || "")
@@ -33,7 +32,7 @@ export default function Bots() {
             }
         }
         fetchBot()
-    }, [session, isAuthLoading])
+    }, [session])
 
     if (isLoading) {
         return <div className="max-w-6xl mx-auto px-6 py-12 flex flex-col gap-4">

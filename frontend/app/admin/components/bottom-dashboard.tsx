@@ -27,7 +27,7 @@ import { ProfileModal } from "./profile-modal"
 export default function BottomDashboard() {
     const [search, setSearch] = useState("")
     const [filterStatus, setFilterStatus] = useState("All")
-    const { session, isLoading: isAuthLoading } = useAuth()
+    const { session } = useAuth()
     const [admin_dashboard, setAdminDashboard] = useState<User[] | null>(null)
     const [isloading, setIsloading] = useState(true)
 
@@ -63,9 +63,8 @@ export default function BottomDashboard() {
     }
 
     useEffect(() => {
-        if (isAuthLoading) return
         fetchAdminDashboard()
-    }, [session, isAuthLoading])
+    }, [session])
 
     if (isloading) {
         return (
