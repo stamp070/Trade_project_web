@@ -150,19 +150,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const signOut = async () => {
         router.push('/')
         router.refresh()
-
         try {
             await serverSignOut()
+            await supabase.auth.signOut()
             showToast.success("Sign out successfully")
         } catch (error) {
             showToast.error("Error signing out")
         }
-        await supabase.auth.signOut()
 
+        // Clear state ก่อน แล้วค่อย navigate → Navbar จะ re-render ถูกต้อง
         setSession(null)
         setUser(null)
         setRole(null)
         setIsAdmin(false)
+        setTourState({})
+
+
     }
 
     return (

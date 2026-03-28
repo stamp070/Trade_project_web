@@ -57,7 +57,7 @@ export async function get_user_profile(token: string, user_id: string): Promise<
     }
 }
 
-export async function banned_user(token: string, user_id: string): Promise<void> {
+export async function banned_user(token: string, user_id: string): Promise<{ status: string, message: string } | undefined> {
     try {
         const res = await fetch(`${API_URL}/api/admin/banned/${user_id}`, {
             method: "PUT",
@@ -69,12 +69,13 @@ export async function banned_user(token: string, user_id: string): Promise<void>
         if (!res.ok) {
             throw new Error("Failed to ban user")
         }
+        return res.json()
     } catch (error) {
         console.error("Error banning user:", error)
     }
 }
 
-export async function unbanned_user(token: string, user_id: string): Promise<void> {
+export async function unbanned_user(token: string, user_id: string): Promise<{ status: string, message: string } | undefined> {
     try {
         const res = await fetch(`${API_URL}/api/admin/unbanned/${user_id}`, {
             method: "PUT",
@@ -86,6 +87,7 @@ export async function unbanned_user(token: string, user_id: string): Promise<voi
         if (!res.ok) {
             throw new Error("Failed to unban user")
         }
+        return res.json()
     } catch (error) {
         console.error("Error unbanning user:", error)
     }

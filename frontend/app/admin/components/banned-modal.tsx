@@ -1,6 +1,8 @@
 import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction, AlertDialogTrigger } from "@/components/ui/alert-dialog"
 import { banned_user } from "@/services/admin"
 import { useAuth } from "@/components/provider/auth-provider"
+import { showToast } from "@/lib/toast-style"
+
 interface BannedModalProps {
     user_id: string
     onBanned: () => void
@@ -10,8 +12,13 @@ interface BannedModalProps {
 export function BannedModal({ user_id, onBanned, children }: BannedModalProps) {
     const { session, user } = useAuth()
     const handleBanned = async () => {
-        await banned_user(session?.access_token || "", user_id)
-        onBanned()
+        const res = await banned_user(session?.access_token || "", user_id)
+        if (res?.status === "success") {
+            onBanned()
+            showToast.success(res?.message || "User banned successfully")
+        } else {
+            showToast.error(res?.message || "Failed to ban user")
+        }
     }
     return (
         <AlertDialog>

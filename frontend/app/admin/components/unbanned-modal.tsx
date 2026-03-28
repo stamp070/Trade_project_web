@@ -1,6 +1,7 @@
 import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction, AlertDialogTrigger } from "@/components/ui/alert-dialog"
 import { unbanned_user } from "@/services/admin"
 import { useAuth } from "@/components/provider/auth-provider"
+import { showToast } from "@/lib/toast-style"
 interface UnbannedModalProps {
     user_id: string
     onUnbanned: () => void
@@ -10,8 +11,13 @@ interface UnbannedModalProps {
 export function UnbannedModal({ user_id, onUnbanned, children }: UnbannedModalProps) {
     const { session } = useAuth()
     const handleUnbanned = async () => {
-        await unbanned_user(session?.access_token || "", user_id)
-        onUnbanned()
+        const res = await unbanned_user(session?.access_token || "", user_id)
+        if (res?.status === "success") {
+            onUnbanned()
+            showToast.success(res?.message || "User unbanned successfully")
+        } else {
+            showToast.error(res?.message || "Failed to unban user")
+        }
     }
     return (
         <AlertDialog>
