@@ -30,6 +30,7 @@ async def create_checkout_session_service(request: list[str], user):
     if not customer_id:
         new_customer = stripe.Customer.create(
             email=user.email,
+            address={"country": "TH"},
             metadata={"user_id": user.id}
         )
         customer_id = new_customer.id
@@ -50,18 +51,19 @@ async def create_checkout_session_service(request: list[str], user):
                 'price_data': {
                     'currency': 'thb',
                     'product_data': {
-                        'name': f'Trading Fee (Invoice: {item["invoice_id"]})',
+                        'name': f'Trading Fee',
                     },
-                    'unit_amount': int(amount * 100),
+                    'unit_amount': int(amount*100*32.50),
                 },
                 'quantity': 1,
             })
-    
+
     try:
         checkout_session = stripe.checkout.Session.create(
+            payment_method_types=['card', 'promptpay'],
             customer=customer_id,
             line_items=stripe_items,
-            mode='payment', # Dynamic price usually uses 'payment' mode, unless creating a subscription product on the fly
+            mode='payment',
             success_url=YOUR_DOMAIN + '/bills?payment=success',
             cancel_url=YOUR_DOMAIN + '/bills?payment=cancelled',
             metadata={"user_id": user.id, "invoice_ids": ",".join(request)}

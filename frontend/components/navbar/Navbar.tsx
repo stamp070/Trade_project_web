@@ -7,9 +7,10 @@ import { useAuth } from "@/components/provider/auth-provider"
 import { useState, useEffect } from "react"
 
 export default function Navbar() {
-    const { user, isAdmin, session } = useAuth()
+    const { user, isAdmin, session, isLoading } = useAuth()
     const [isMenuOpen, setIsMenuOpen] = useState(false)
-
+    console.log(isAdmin)
+    console.log(isLoading)
     const toggleMenu = () => setIsMenuOpen(!isMenuOpen)
 
     return (
@@ -50,7 +51,7 @@ export default function Navbar() {
                             Bills
                         </Button>
                     </Link>
-                    {isAdmin && (
+                    {(isAdmin || isLoading) && (
                         <Link href="/admin">
                             <Button variant="ghost" className="text-slate-600 hover:bg-transparent decoration-2 hover:text-blue-600 hover:underline underline-offset-6">
                                 Admin
@@ -113,7 +114,7 @@ export default function Navbar() {
                     <Link href="/bills" onClick={() => setIsMenuOpen(false)}>
                         <Button variant="ghost" className="w-full justify-start text-slate-600">Bills</Button>
                     </Link>
-                    {isAdmin && (
+                    {(isAdmin || isLoading) && (
                         <Link href="/admin" onClick={() => setIsMenuOpen(false)}>
                             <Button variant="ghost" className="w-full justify-start text-slate-600">Admin</Button>
                         </Link>
