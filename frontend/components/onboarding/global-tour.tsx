@@ -56,13 +56,13 @@ export default function GlobalTour() {
                 setCurrentSteps([
                     {
                         title: '📊 Dashboard Overview',
-                        description: 'Now that you have connected an account, you can see your aggregated portfolio performance here.',
+                        description: 'Now that you have connected an account, you can see your portfolio performance here.',
                         target: () => document.getElementById('tour-equity-chart') as HTMLElement,
                         placement: 'bottom',
                     },
                     {
                         title: "➕ MT5 Account",
-                        description: "Click here to add your MT5 account by enter your MT5 ID and portfolio name",
+                        description: "Click here to add your MT5 account by enter your MT5 ID and Portfolio name",
                         target: () => document.getElementById('tour-add-mt5') as HTMLElement,
                         placement: 'right',
                     },
@@ -74,7 +74,7 @@ export default function GlobalTour() {
                     },
                     {
                         title: '📈 Performance Stats',
-                        description: 'Track your total orders, wins, and win rate at a glance.',
+                        description: 'Track your total orders, wins, and win rate.',
                         target: () => document.getElementById('tour-stats-footer') as HTMLElement,
                         placement: 'top',
                     },
@@ -102,7 +102,7 @@ export default function GlobalTour() {
                     },
                     {
                         title: '⚙️ Configure Bot',
-                        description: 'You can configure a bot version and assign it to your connected MT5 accounts using this card.',
+                        description: 'You can configure bot version and assign it to your MT5 accounts using this card.',
                         target: () => document.getElementById('tour-bot-card-0') as HTMLElement,
                         placement: 'right',
                     }
@@ -118,13 +118,13 @@ export default function GlobalTour() {
                 setCurrentSteps([
                     {
                         title: '🔍 Account Details',
-                        description: 'This page shows performance specific to this individual MT5 account.',
+                        description: 'This page shows performance specific to this MT5 account.',
                         target: () => document.getElementById('tour-account-equity') as HTMLElement,
                         placement: 'bottom',
                     },
                     {
                         title: '🤖 Bot Connections',
-                        description: 'You can turn your connected bots on or off for this specific account right here.',
+                        description: 'You can turn your connected bots on or off for this specific account.But if you didn\'t have any bot yet you can add it from the bot page.',
                         target: () => document.getElementById('tour-account-bots') as HTMLElement,
                         placement: 'left',
                     },

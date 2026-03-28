@@ -107,7 +107,9 @@ export default function Dashboard() {
                             <p className="text-xs text-slate-500 mb-1">Balance</p>
                             <div className="flex items-baseline justify-center gap-2">
                                 <span className="text-3xl font-bold text-slate-900">${Math.floor(dashboardData?.balance || 0).toLocaleString()}</span>
-                                <span className="text-sm font-medium text-emerald-500">({dashboardData?.total_pnl || 0 > 0 ? "+" : ""} ${dashboardData?.total_pnl.toFixed(2) || 0})</span>
+                                <span className={`text-sm font-medium ${(dashboardData?.total_pnl || 0) >= 0 ? "text-emerald-500" : "text-red-500"}`}>
+                                    ({(dashboardData?.total_pnl || 0) >= 0 ? "+" : ""}{dashboardData?.total_pnl?.toFixed(2) || "0.00"})
+                                </span>
                             </div>
                         </div>
                         <div className="text-center">
