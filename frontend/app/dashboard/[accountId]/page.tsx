@@ -61,7 +61,6 @@ export default function AccountDetailPage() {
     }
 
     useEffect(() => {
-        if (isAuthLoading) return
         const abortController = new AbortController()
 
         fetchData(abortController.signal)
@@ -69,7 +68,7 @@ export default function AccountDetailPage() {
         return () => {
             abortController.abort()
         }
-    }, [session, isAuthLoading, accountId])
+    }, [session, accountId])
 
     const handleToggleBot = async (index: number, checked: boolean) => {
         const bot = isBotConnected?.[index]

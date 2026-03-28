@@ -31,10 +31,8 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
     }
 
     useEffect(() => {
-        if (!isAuthLoading) {
-            fetchData()
-        }
-    }, [session, isAuthLoading])
+        fetchData()
+    }, [session])
     return (
         <DashboardContext.Provider value={{ dashboardData, isLoading, fetchData }}>
             {children}
