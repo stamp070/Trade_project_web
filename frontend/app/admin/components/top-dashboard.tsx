@@ -9,10 +9,11 @@ import { Skeleton } from "@/components/ui/skeleton"
 
 
 export default function TopDashboard() {
-    const { session, user } = useAuth()
+    const { session, isLoading: isAuthLoading } = useAuth()
     const [admin_dashboard, setAdminDashboard] = useState<TopAdminDashboard | null>(null)
     const [isloading, setIsloading] = useState(true)
     useEffect(() => {
+        if (isAuthLoading) return
         const fetchAdminDashboard = async () => {
             if (!session) return
             try {
@@ -25,7 +26,7 @@ export default function TopDashboard() {
             }
         }
         fetchAdminDashboard()
-    }, [session])
+    }, [session, isAuthLoading])
 
     if (isloading) {
         return (

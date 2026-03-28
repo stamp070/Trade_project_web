@@ -22,18 +22,17 @@ export default function Bots() {
 
     useEffect(() => {
         if (isAuthLoading) return
-        try {
-            const fetchBot = async () => {
+        const fetchBot = async () => {
+            try {
                 const data = await getBot(session?.access_token || "")
                 setBotOptions(data)
+            } catch (error) {
+                console.error("Error fetching bots:", error)
+            } finally {
+                setIsLoading(false)
             }
-            fetchBot()
-        } catch (error) {
-            console.error("Error fetching bots:", error)
-        } finally {
-            setIsLoading(false)
-            console.log(botOptions)
         }
+        fetchBot()
     }, [session, isAuthLoading])
 
     if (isLoading) {
