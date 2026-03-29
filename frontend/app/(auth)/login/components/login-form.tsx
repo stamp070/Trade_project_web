@@ -18,6 +18,7 @@ import { useRouter } from "next/navigation"
 import { z } from "zod"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { OtpModal } from "@/app/(auth)/register/components/otp-modal"
 
 const loginSchema = z.object({
     email: z.string().min(1, { message: "Email is required" }).email({ message: "Invalid email address" }),
@@ -34,6 +35,13 @@ export function LoginForm({
     const [loading, setLoading] = useState(false)
     const [authError, setAuthError] = useState<string | null>(null)
 
+    const [otpOpen, setOtpOpen] = useState(false)
+    const [otpToken, setOtpToken] = useState("")
+    const [otpLoading, setOtpLoading] = useState(false)
+    const [otpError, setOtpError] = useState<string | null>(null)
+    const [pendingEmail, setPendingEmail] = useState("")
+    const [pendingPassword, setPendingPassword] = useState("")
+
     const form = useForm<LoginFormValues>({
         resolver: zodResolver(loginSchema),
         defaultValues: {
@@ -48,17 +56,21 @@ export function LoginForm({
         setLoading(true)
         setAuthError(null)
 
-        const { error } = await supabase.auth.signInWithPassword({
+        const { error } = await supabase.auth.signInWithOtp({
             email: data.email,
-            password: data.password,
+            options: {
+                shouldCreateUser: false,
+            },
         })
 
         if (error) {
             setAuthError(error.message)
             setLoading(false)
         } else {
-            router.push("/dashboard")
-            router.refresh()
+            setPendingEmail(data.email)
+            setPendingPassword(data.password)
+            setOtpOpen(true)
+            setLoading(false)
         }
     }
 
@@ -72,6 +84,39 @@ export function LoginForm({
 
         if (error) {
             console.error(error)
+        }
+    }
+
+    const handleVerifyOtp = async () => {
+        if (!otpToken) {
+            setOtpError("Please enter the 6-digit code")
+            return
+        }
+        setOtpLoading(true)
+        setOtpError(null)
+
+        const { error } = await supabase.auth.verifyOtp({
+            email: pendingEmail,
+            token: otpToken,
+            type: 'email'
+        })
+
+        if (error) {
+            setOtpError(error.message)
+            setOtpLoading(false)
+        } else {
+
+            setOtpOpen(false)
+            router.push("/dashboard")
+            router.refresh()
+        }
+    }
+
+    const handleOtpOpenChange = (open: boolean) => {
+        setOtpOpen(open)
+        if (!open) {
+            setOtpToken("")
+            setOtpError(null)
         }
     }
 
@@ -148,6 +193,16 @@ export function LoginForm({
                     </form>
                 </CardContent>
             </Card>
+            <OtpModal
+                otpOpen={otpOpen}
+                handleOtpOpenChange={handleOtpOpenChange}
+                pendingEmail={pendingEmail}
+                otpError={otpError}
+                otpToken={otpToken}
+                setOtpToken={setOtpToken}
+                handleVerifyOtp={handleVerifyOtp}
+                otpLoading={otpLoading}
+            />
         </div>
     )
 }
