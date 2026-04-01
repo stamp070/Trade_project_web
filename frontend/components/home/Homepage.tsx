@@ -93,28 +93,7 @@ export default function Home() {
                                 timeframe: "1 Hr."
                             }}
                         />
-                        {/* Bot 2: XAU/USD */}
-                        <BotCard
-                            icon={<Coins className="w-6 h-6 text-yellow-600" />}
-                            title="XAU / USD Bot"
-                            stats={{
-                                label: "Success Rate", // ตาม PDF ใช้คำว่า Success Rate
-                                value: "54%",
-                                maxDD: "-2%",
-                                timeframe: "1 Hr."
-                            }}
-                        />
-                        {/* Bot 3: JPY/USD */}
-                        <BotCard
-                            icon={<DollarSign className="w-6 h-6 text-purple-600" />}
-                            title="JPY / USD Bot"
-                            stats={{
-                                label: "Success Rate",
-                                value: "51%",
-                                maxDD: "-0.5%",
-                                timeframe: "1 Hr."
-                            }}
-                        />
+
                     </div>
                 </div>
             </section>
