@@ -107,7 +107,7 @@ export default function DocsPage() {
                                     <div className="text-sm text-slate-700">
                                         Add the following URL to the list:
                                         <code className="block mt-2 bg-slate-100 text-slate-800 p-2 rounded-lg text-xs break-all border border-slate-200 select-all">
-                                            https://revenue-curious-myth-wednesday.trycloudflare.com
+                                            https://logging-grand-heating-cigarette.trycloudflare.com
                                         </code>
                                     </div>
                                 </div>
