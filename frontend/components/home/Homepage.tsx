@@ -71,32 +71,6 @@ export default function Home() {
                 </div>
             </section>
 
-            {/* ================= Bot Section  ================= */}
-            <section className="py-24 px-6 bg-slate-50">
-                <div className="max-w-7xl mx-auto">
-                    <div className="text-center mb-16 space-y-4">
-                        <h2 className="text-3xl md:text-4xl font-bold text-slate-900">Choose Your Trading Bot</h2>
-                        <p className="text-slate-600 max-w-2xl mx-auto text-lg">
-                            Select from our range of specialized trading bots designed for different strategies
-                        </p>
-                    </div>
-
-                    <div className="grid md:grid-cols-3 gap-8">
-                        {/* Bot 1: EUR/USD  */}
-                        <BotCard
-                            icon={<Euro className="w-6 h-6 text-blue-600" />}
-                            title="EUR / USD Bot"
-                            stats={{
-                                label: "Winrate",
-                                value: "52%",
-                                maxDD: "-1.25%",
-                                timeframe: "1 Hr."
-                            }}
-                        />
-
-                    </div>
-                </div>
-            </section>
 
             {/* ================= How It Works Section ================= */}
             <section className="py-24 px-6 bg-white">
